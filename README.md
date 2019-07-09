@@ -1,5 +1,7 @@
 # esp-idf-mqtt-broker
-MQTT Broker for esp-idf
+MQTT Broker for esp-idf.   
+This project use [this](https://github.com/cesanta/mongoose.git) library.   
+
 
 1. In this project directory, create a components directory.
 
