@@ -1,0 +1,77 @@
+menu "Wi-Fi Configuration"
+
+    choice WIFI_MODE
+        prompt "Wi-Fi Access mode"
+        default ST_MODE
+        help
+            Select Wi-Fi Access mode.
+        config ST_MODE
+            bool "Station MODE"
+            help
+                Wi-Fi is Station Mode.
+        config AP_MODE
+            bool "Access Point MODE"
+            help
+                Wi-Fi is Access Point Mode.
+    endchoice
+
+    config ESP_WIFI_SSID
+        string "WiFi SSID"
+        default "myssid"
+        help
+            SSID (network name) for the example to connect to.
+
+    config ESP_WIFI_PASSWORD
+        string "WiFi Password"
+        default "mypassword"
+        help
+            WiFi password (WPA or WPA2) for the example to use.
+
+if AP_MODE
+
+    config ESP_MAX_STA_CONN
+        int "Maximal STA connections"
+        default 4
+        help
+            Max number of the STA connects to AP.
+
+
+endif
+
+if ST_MODE
+
+    config ESP_MAXIMUM_RETRY
+        int "Maximum retry"
+        default 5
+        help
+            Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
+
+    config STATIC_IP
+        bool "Enable Static IP Address"
+        default false
+        help
+            Enable Static IP Address.
+
+if STATIC_IP
+    config STATIC_IP_ADDRESS
+        string "Static IP Address"
+        default "192.168.10.100"
+        help
+            Static IP Address for Station.
+
+    config STATIC_GW_ADDRESS
+        string "Static GW Address"
+        default "192.168.10.1"
+        help
+            Static GW Address for Station.
+
+    config STATIC_NM_ADDRESS
+        string "Static Netmask"
+        default "255.255.255.0"
+        help
+            Static Netmask for Station.
+
+endif
+
+endif
+endmenu

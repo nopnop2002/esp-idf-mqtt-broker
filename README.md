@@ -1,2 +1,67 @@
 # esp-idf-mqtt-broker
 MQTT Broker for esp-idf
+
+1. In this project directory, create a components directory.
+
+2. In the components directory, clone Mongoose:
+git clone https://github.com/cesanta/mongoose.git
+
+3. In the new Mongoose directory, create a component.mk file containing:
+
+```
+COMPONENT_ADD_INCLUDEDIRS=.
+```
+
+4. You have to enable MG_ENABLE_MQTT_BROKER  in mongoose.h.
+
+```
+#ifndef MG_ENABLE_MQTT_BROKER
+#define MG_ENABLE_MQTT_BROKER 1
+#endif
+```
+
+5. Compile this solution.
+
+---
+
+```
+git clone https://github.com/nopnop2002/mongoose
+cd mongoose
+mkdir -p components
+cd components/
+git clone https://github.com/cesanta/mongoose.git
+cd mongoose/
+echo "COMPONENT_ADD_INCLUDEDIRS=." > component.mk
+vi mongoose.h
+cd ../..
+make menuconfig
+make flash
+```
+
+---
+
+# Config Wifi
+
+You can choice Wifi setting.   
+
+![config-menu](https://user-images.githubusercontent.com/6020549/60885379-6ed2b500-a28a-11e9-9c1f-b56b0b0223ec.jpg)
+
+## Access Point Mode
+![config-ap](https://user-images.githubusercontent.com/6020549/60885370-69756a80-a28a-11e9-974d-123cb290de3f.jpg)
+
+## Station Mode
+![config-sta](https://user-images.githubusercontent.com/6020549/60885405-78f4b380-a28a-11e9-8709-3b7ef1f1a903.jpg)
+
+## Station Mode of Static Address
+![config-static](https://user-images.githubusercontent.com/6020549/60885411-7befa400-a28a-11e9-8871-cf6e3c6ee96a.jpg)
+
+----
+
+# Monitor
+
+## Accesas Point Mode
+![ap_mode](https://user-images.githubusercontent.com/6020549/60885576-e6084900-a28a-11e9-89ab-b7d22e4a376e.jpg)
+
+## Station Mode
+![sta_mode](https://user-images.githubusercontent.com/6020549/60885628-f7e9ec00-a28a-11e9-8941-01303a1c84d0.jpg)
+
