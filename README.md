@@ -51,16 +51,19 @@ You can choice Wifi setting.
 
 ## Access Point Mode
 ![config-ap](https://user-images.githubusercontent.com/6020549/60885370-69756a80-a28a-11e9-974d-123cb290de3f.jpg)
+
 SSID:SSID of ESP32   
 ESP32 have 192.168.4.1.   
 
 ## Station Mode
 ![config-sta](https://user-images.githubusercontent.com/6020549/60885405-78f4b380-a28a-11e9-8709-3b7ef1f1a903.jpg)
+
 SSID:SSID of your Wifi router   
 ESP32 get IP using DHCP.    
 
 ## Station Mode of Static Address
 ![config-static](https://user-images.githubusercontent.com/6020549/60885411-7befa400-a28a-11e9-8871-cf6e3c6ee96a.jpg)
+
 SSID:SSID of your Wifi router   
 ESP32 set your specific IP.   
 
