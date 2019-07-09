@@ -20,19 +20,20 @@ COMPONENT_ADD_INCLUDEDIRS=.
 #endif
 ```
 
-5. Compile this solution.
+5. Compile this project.
 
 ---
 
 ```
-git clone https://github.com/nopnop2002/mongoose
-cd mongoose
+git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
+cd esp-idf-mqtt-broker
 mkdir -p components
 cd components/
 git clone https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "COMPONENT_ADD_INCLUDEDIRS=." > component.mk
 vi mongoose.h
+Enable MG_ENABLE_MQTT_BROKER
 cd ../..
 make menuconfig
 make flash
@@ -40,7 +41,7 @@ make flash
 
 ---
 
-# Config Wifi
+# Wifi Setting
 
 You can choice Wifi setting.   
 
@@ -48,12 +49,18 @@ You can choice Wifi setting.
 
 ## Access Point Mode
 ![config-ap](https://user-images.githubusercontent.com/6020549/60885370-69756a80-a28a-11e9-974d-123cb290de3f.jpg)
+SSID:SSID of ESP32   
+ESP32 have 192.168.4.1.   
 
 ## Station Mode
 ![config-sta](https://user-images.githubusercontent.com/6020549/60885405-78f4b380-a28a-11e9-8709-3b7ef1f1a903.jpg)
+SSID:SSID of your Wifi router   
+ESP32 get IP using DHCP.    
 
 ## Station Mode of Static Address
 ![config-static](https://user-images.githubusercontent.com/6020549/60885411-7befa400-a28a-11e9-8871-cf6e3c6ee96a.jpg)
+SSID:SSID of your Wifi router   
+ESP32 set your specific IP.   
 
 ----
 
