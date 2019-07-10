@@ -74,7 +74,7 @@ ESP32 set your specific IP.
 
 # Monitor
 
-## Show all incomming message
+## Show all incoming message
 ![show_all](https://user-images.githubusercontent.com/6020549/60963697-7490cf00-a34c-11e9-8386-1025afce8f8f.jpg)
 
 ## Show event only
