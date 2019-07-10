@@ -74,4 +74,11 @@ if STATIC_IP
 endif
 
 endif
+
+    config SUBSCRIBE
+        bool "Show all incoming message"
+        default true
+        help
+            Show all incoming message
+
 endmenu

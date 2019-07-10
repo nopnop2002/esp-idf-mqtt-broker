@@ -53,7 +53,7 @@ static const char *TAG = "broker";
 //static const char *s_listening_address = "0.0.0.0:1883";
 static const char *s_listening_address = "1883";
 
-static void mg_ev_handler(struct mg_connection *c, int ev, void *ev_data) {
+static void broker_ev_handler(struct mg_connection *c, int ev, void *ev_data) {
   /* Do your custom event processing here */
   mg_mqtt_broker(c, ev, ev_data);
 
@@ -88,6 +88,62 @@ static void mg_ev_handler(struct mg_connection *c, int ev, void *ev_data) {
       break;
   }
 }
+
+
+static const char *s_user_name = NULL;
+static const char *s_password = NULL;
+static const char *s_topic = "#";
+static struct mg_mqtt_topic_expression s_topic_expr = {NULL, 0};
+
+static void client_ev_handler(struct mg_connection *nc, int ev, void *p) {
+  struct mg_mqtt_message *msg = (struct mg_mqtt_message *) p;
+  (void) nc;
+
+  //if (ev != MG_EV_POLL) ESP_LOGI(TAG, "USER HANDLER GOT EVENT %d", ev);
+
+  switch (ev) {
+    case MG_EV_CONNECT: {
+      struct mg_send_mqtt_handshake_opts opts;
+      memset(&opts, 0, sizeof(opts));
+      opts.user_name = s_user_name;
+      opts.password = s_password;
+
+      mg_set_protocol_mqtt(nc);
+      mg_send_mqtt_handshake_opt(nc, "dummy", opts);
+      break;
+    }
+    case MG_EV_MQTT_CONNACK:
+      if (msg->connack_ret_code != MG_EV_MQTT_CONNACK_ACCEPTED) {
+        ESP_LOGE(TAG, "Got mqtt connection error: %d", msg->connack_ret_code);
+        while(1) { vTaskDelay(1); }
+      }
+      s_topic_expr.topic = s_topic;
+      ESP_LOGI(TAG, "Subscribing to '%s'", s_topic);
+      mg_mqtt_subscribe(nc, &s_topic_expr, 1, 42);
+      break;
+    case MG_EV_MQTT_PUBACK:
+      ESP_LOGI(TAG, "Message publishing acknowledged (msg_id: %d)", msg->message_id);
+      break;
+    case MG_EV_MQTT_SUBACK:
+      ESP_LOGI(TAG, "Subscription acknowledged");
+      break;
+    case MG_EV_MQTT_PUBLISH: {
+#if 0
+        char hex[1024] = {0};
+        mg_hexdump(nc->recv_mbuf.buf, msg->payload.len, hex, sizeof(hex));
+        printf("Got incoming message %.*s:\n%s", (int)msg->topic.len, msg->topic.p, hex);
+#else
+      ESP_LOGI(TAG, "Got incoming message %.*s: %.*s", (int) msg->topic.len,
+             msg->topic.p, (int) msg->payload.len, msg->payload.p);
+#endif
+      break;
+    }
+    case MG_EV_CLOSE:
+      //ESP_LOGE(TAG, "Connection closed");
+      break;
+  }
+}
+
 
 static void event_handler(void* arg, esp_event_base_t event_base, 
                                 int32_t event_id, void* event_data)
@@ -282,6 +338,56 @@ void wifi_init_sta()
 }
 #endif
 
+void broker(void *pvParameters)
+{
+    /* Starting Broker */
+    struct mg_mgr mgr;
+    struct mg_connection *nc;
+    struct mg_mqtt_broker brk;
+
+    mg_mgr_init(&mgr, NULL);
+
+    nc = mg_bind(&mgr, s_listening_address, broker_ev_handler);
+    if (nc == NULL) {
+      ESP_LOGE(TAG, "Error setting up listener!");
+      return;
+    }
+
+    mg_mqtt_broker_init(&brk, NULL);
+    nc->priv_2 = &brk;
+    mg_set_protocol_mqtt(nc);
+
+
+    /* Processing events */
+    while (1) {
+      mg_mgr_poll(&mgr, 1000);
+    }
+
+}
+
+static char s_address[32];
+
+void client(void *pvParameters)
+{
+    /* Starting Mongoose */
+    struct mg_mgr mgr;
+    mg_mgr_init(&mgr, NULL);
+
+    //strcpy(s_address, "192.168.4.1:1883");
+    ESP_LOGD(pcTaskGetTaskName(0), "s_address=[%s]", s_address);
+    struct mg_connection *mc;
+    mc =  mg_connect(&mgr, s_address, client_ev_handler);
+    if (mc == NULL) {
+        ESP_LOGE(TAG, "mg_connect(%s) failed", s_address);
+        while(1) { vTaskDelay(1); }
+    }
+
+    /* Processing events */
+    while (1) {
+      mg_mgr_poll(&mgr, 1000);
+    }
+}
+
 void app_main()
 {
     //Initialize NVS
@@ -308,32 +414,21 @@ void app_main()
     ESP_LOGI(TAG, "ESP32 is STA MODE");
 #endif
 
-    /* Starting Mongoose */
-    struct mg_mgr mgr;
-    struct mg_connection *nc;
-    struct mg_mqtt_broker brk;
-
-    mg_mgr_init(&mgr, NULL);
-
-    nc = mg_bind(&mgr, s_listening_address, mg_ev_handler);
-    if (nc == NULL) {
-      ESP_LOGE(TAG, "Error setting up listener!");
-      return;
-    }
-
-    mg_mqtt_broker_init(&brk, NULL);
-    nc->priv_2 = &brk;
-    mg_set_protocol_mqtt(nc);
-
     /* Print the local IP address */
-    ESP_LOGI(TAG, "MQTT broker started on %s", s_listening_address);
     ESP_LOGI(TAG, "IP Address:  %s", ip4addr_ntoa(&ip_info.ip));
     ESP_LOGI(TAG, "Subnet mask: %s", ip4addr_ntoa(&ip_info.netmask));
     ESP_LOGI(TAG, "Gateway:     %s", ip4addr_ntoa(&ip_info.gw));
 
-    /* Processing events */
-    while (1) {
-      mg_mgr_poll(&mgr, 1000);
-    }
+    /* Start Broker */
+    ESP_LOGI(TAG, "MQTT Broker started on %s", s_listening_address);
+    xTaskCreate(broker, "BROKER", 1024*4, NULL, 2, NULL);
+
+#if CONFIG_SUBSCRIBE
+    /* Start Subscriber */
+    ESP_LOGI(TAG, "MQTT Subscriber started");
+    sprintf(s_address, "%s:1883", ip4addr_ntoa(&ip_info.ip));
+    xTaskCreate(client, "CLIENT", 1024*4, NULL, 2, NULL);
+#endif
 
 }
+
