@@ -59,13 +59,13 @@ SSID:SSID of ESP32
 ESP32 have 192.168.4.1.   
 
 ## Station Mode
-![config-sta](https://user-images.githubusercontent.com/6020549/60974756-977bad00-a365-11e9-9298-961a1d6ffbf5.jpg)
+![config-sta](https://user-images.githubusercontent.com/6020549/61048029-c05e7980-a41b-11e9-83bd-9574584be524.jpg)
 
 SSID:SSID of your Wifi router   
 ESP32 get IP using DHCP.    
 
 ## Station Mode of Static Address
-![config-static](https://user-images.githubusercontent.com/6020549/60974754-977bad00-a365-11e9-8262-fc394c495393.jpg)
+![config-static](https://user-images.githubusercontent.com/6020549/61048047-cb190e80-a41b-11e9-9ce9-2a9628317936.jpg)
 
 SSID:SSID of your Wifi router   
 ESP32 set your specific IP.   
