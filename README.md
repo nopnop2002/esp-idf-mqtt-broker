@@ -53,7 +53,7 @@ You can choice Wifi setting.
 ![config-menu](https://user-images.githubusercontent.com/6020549/60885379-6ed2b500-a28a-11e9-9c1f-b56b0b0223ec.jpg)
 
 ## Access Point Mode
-![ap_mode](https://user-images.githubusercontent.com/6020549/61045044-ff3d0100-a414-11e9-9eae-effa8864a123.jpg)
+![config-ap](https://user-images.githubusercontent.com/6020549/61047772-2f879e00-a41b-11e9-9198-6f6ce317b05d.jpg)
 
 SSID:SSID of ESP32   
 ESP32 have 192.168.4.1.   
