@@ -53,7 +53,7 @@ You can choice Wifi setting.
 ![config-menu](https://user-images.githubusercontent.com/6020549/60885379-6ed2b500-a28a-11e9-9c1f-b56b0b0223ec.jpg)
 
 ## Access Point Mode
-![config-ap](https://user-images.githubusercontent.com/6020549/60974755-977bad00-a365-11e9-9097-41c446921ae3.jpg)
+![ap_mode](https://user-images.githubusercontent.com/6020549/61045044-ff3d0100-a414-11e9-9eae-effa8864a123.jpg)
 
 SSID:SSID of ESP32   
 ESP32 have 192.168.4.1.   
@@ -80,3 +80,34 @@ ESP32 set your specific IP.
 ## Show event only
 ![show_event](https://user-images.githubusercontent.com/6020549/60963702-76f32900-a34c-11e9-9fbe-781f583965ab.jpg)
 
+----
+
+# Bug Fix to mongoose.c
+
+There is some bug in mongoose.c.   
+So you have to fix manually.   
+
+```
+void mg_mqtt_suback(struct mg_connection *nc, uint8_t *qoss, size_t qoss_len,
+                    uint16_t message_id) {
+  size_t i;
+  uint16_t netbytes;
+
+  //Comment by nopnop2002
+  //mg_send_mqtt_header(nc, MG_MQTT_CMD_SUBACK, MG_MQTT_QOS(1), 2 + qoss_len);
+  //Add by nopnop2002
+  mg_send_mqtt_header(nc, MG_MQTT_CMD_SUBACK, 0, 2 + qoss_len);
+
+  netbytes = htons(message_id);
+  mg_send(nc, &netbytes, 2);
+
+  for (i = 0; i < qoss_len; i++) {
+    mg_send(nc, &qoss[i], 1);
+  }
+}
+```
+
+---
+
+# MQTT Client
+You can use [this](https://github.com/espressif/esp-idf/tree/master/examples/protocols/mqtt/tcp) as client.
