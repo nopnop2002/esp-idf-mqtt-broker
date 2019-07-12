@@ -81,4 +81,10 @@ endif
         help
             Show all incoming message
 
+    config WEB_SOCKET
+        bool "Enable over web sockets (Expermental)"
+        default false
+        help
+            Broker over web sockets
+
 endmenu
