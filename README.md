@@ -114,7 +114,7 @@ void mg_mqtt_suback(struct mg_connection *nc, uint8_t *qoss, size_t qoss_len,
 ![config-web-socket](https://user-images.githubusercontent.com/6020549/61126544-a9855900-a4e7-11e9-9082-58cd8eb5f693.jpg)
 
 You can test using test-socket.py.   
-I fork [this](http://www.steves-internet-guide.com/download/websockets-publish-subscribe/) script.   
+I forked [this](http://www.steves-internet-guide.com/download/websockets-publish-subscribe/).   
 
 ```
 curl https://bootstrap.pypa.io/get-pip.py -o - | sudo python
