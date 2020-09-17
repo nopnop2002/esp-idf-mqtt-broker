@@ -77,7 +77,7 @@ You can use the MDNS hostname instead of the IP address.
 
 ![mdns-1](https://user-images.githubusercontent.com/6020549/93420660-60e6de00-f8ea-11ea-9783-3c295130a840.jpg)
 
-![mdns-2](https://user-images.githubusercontent.com/6020549/93420674-6512fb80-f8ea-11ea-9ea5-5ba0f261ca4a.jpg)
+![mdns-2](https://user-images.githubusercontent.com/6020549/93420837-cdfa7380-f8ea-11ea-952c-64113c929df7.jpg)
 
 You can change MDNS hostname using menuconfig.   
 
