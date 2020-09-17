@@ -75,9 +75,9 @@ ESP32 set your specific IP.
 # Using MDNS hostname
 You can use the MDNS hostname instead of the IP address.   
 
-![mdns-1](https://user-images.githubusercontent.com/6020549/93414481-5de4f100-f8dc-11ea-817d-5c4350a8ad09.jpg)
-
 ![mdns-2](https://user-images.githubusercontent.com/6020549/93414486-5f161e00-f8dc-11ea-8a1b-8b0b050c2be4.jpg)
+
+![mdns-1](https://user-images.githubusercontent.com/6020549/93414481-5de4f100-f8dc-11ea-817d-5c4350a8ad09.jpg)
 
 ----
 
