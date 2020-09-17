@@ -79,6 +79,10 @@ You can use the MDNS hostname instead of the IP address.
 
 ![mdns-1](https://user-images.githubusercontent.com/6020549/93414481-5de4f100-f8dc-11ea-817d-5c4350a8ad09.jpg)
 
+You can change MDNS hostname using menuconfig.   
+
+![config-6](https://user-images.githubusercontent.com/6020549/93414968-6be74180-f8dd-11ea-8622-10430a93a468.jpg)
+
 ----
 
 # Bug Fix to mongoose.c
