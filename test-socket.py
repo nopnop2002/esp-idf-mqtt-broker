@@ -10,7 +10,8 @@
 import paho.mqtt.client as paho
 import time
 # You need to adapt to your environment
-broker="192.168.10.116"
+#broker="192.168.10.133"
+broker="esp32-broker.local"
 port= 8080
 sub_topic="house/#"
 def on_subscribe(client, userdata, mid, granted_qos):   #create function for callback

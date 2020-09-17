@@ -50,35 +50,34 @@ make flash
 
 You can choice Wifi setting.   
 
-![config-menu](https://user-images.githubusercontent.com/6020549/60885379-6ed2b500-a28a-11e9-9c1f-b56b0b0223ec.jpg)
+![config-1](https://user-images.githubusercontent.com/6020549/93414263-e6af5d00-f8db-11ea-903e-155e614709be.jpg)
 
 ## Access Point Mode
-![config-ap](https://user-images.githubusercontent.com/6020549/61047772-2f879e00-a41b-11e9-9198-6f6ce317b05d.jpg)
+![config-4](https://user-images.githubusercontent.com/6020549/93414276-e8792080-f8db-11ea-99f6-df1bcf991487.jpg)
 
 SSID:SSID of ESP32   
 ESP32 have 192.168.4.1.   
 
 ## Station Mode
-![config-sta](https://user-images.githubusercontent.com/6020549/61048029-c05e7980-a41b-11e9-83bd-9574584be524.jpg)
+![config-2](https://user-images.githubusercontent.com/6020549/93414269-e7e08a00-f8db-11ea-95f0-3de34ef65638.jpg)
 
 SSID:SSID of your Wifi router   
 ESP32 get IP using DHCP.    
 
 ## Station Mode of Static Address
-![config-static](https://user-images.githubusercontent.com/6020549/61048047-cb190e80-a41b-11e9-9ce9-2a9628317936.jpg)
+![config-3](https://user-images.githubusercontent.com/6020549/93414274-e8792080-f8db-11ea-897e-ed2dec19a8eb.jpg)
 
 SSID:SSID of your Wifi router   
 ESP32 set your specific IP.   
 
 ----
 
-# Monitor
+# Using MDNS hostname
+You can use the MDNS hostname instead of the IP address.   
 
-## Show all incoming message
-![show_all](https://user-images.githubusercontent.com/6020549/60963697-7490cf00-a34c-11e9-8386-1025afce8f8f.jpg)
+![mdns-1](https://user-images.githubusercontent.com/6020549/93414481-5de4f100-f8dc-11ea-817d-5c4350a8ad09.jpg)
 
-## Show event only
-![show_event](https://user-images.githubusercontent.com/6020549/60963702-76f32900-a34c-11e9-9fbe-781f583965ab.jpg)
+![mdns-2](https://user-images.githubusercontent.com/6020549/93414486-5f161e00-f8dc-11ea-8a1b-8b0b050c2be4.jpg)
 
 ----
 
@@ -111,7 +110,7 @@ void mg_mqtt_suback(struct mg_connection *nc, uint8_t *qoss, size_t qoss_len,
 
 # MQTT Broker over web sockets
 
-![config-web-socket](https://user-images.githubusercontent.com/6020549/61126544-a9855900-a4e7-11e9-9082-58cd8eb5f693.jpg)
+![config-5](https://user-images.githubusercontent.com/6020549/93414277-e911b700-f8db-11ea-8045-1251788906e8.jpg)
 
 You can test WebSocket using test-socket.py.   
 I forked [this](http://www.steves-internet-guide.com/download/websockets-publish-subscribe/).   
