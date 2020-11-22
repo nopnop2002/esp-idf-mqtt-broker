@@ -230,6 +230,22 @@ void wifi_init_sta()
 	tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipInfo);
 #endif
 
+	/*
+	I referred from here.
+	https://www.esp32.com/viewtopic.php?t=5380
+
+	if we should not be using DHCP (for example we are using static IP addresses),
+	then we need to instruct the ESP32 of the locations of the DNS servers manually.
+	Google publicly makes available two name servers with the addresses of 8.8.8.8 and 8.8.4.4.
+	*/
+
+	ip_addr_t d;
+	d.type = IPADDR_TYPE_V4;
+	d.u_addr.ip4.addr = 0x08080808; //8.8.8.8 dns
+	dns_setserver(0, &d);
+	d.u_addr.ip4.addr = 0x08080404; //8.8.4.4 dns
+	dns_setserver(1, &d);
+
 #endif
 
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -320,7 +336,7 @@ void app_main()
 	/* Print the local IP address */
 	ESP_LOGI(TAG, "IP Address : %s", ip4addr_ntoa(&ip_info.ip));
 	ESP_LOGI(TAG, "Subnet mask: %s", ip4addr_ntoa(&ip_info.netmask));
-	ESP_LOGI(TAG, "Gateway    : %s", ip4addr_ntoa(&ip_info.gw));
+	ESP_LOGI(TAG, "Gateway	  : %s", ip4addr_ntoa(&ip_info.gw));
 	sprintf(self_address, "%s", ip4addr_ntoa(&ip_info.ip));
 
 	xSemaphore_subscriber = xSemaphoreCreateBinary();
