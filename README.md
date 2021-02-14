@@ -74,6 +74,7 @@ ESP32 set your specific IP.
 
 # Using MDNS hostname
 You can use the MDNS hostname instead of the IP address.   
+You need to change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
 
 ![mdns-1](https://user-images.githubusercontent.com/6020549/93420660-60e6de00-f8ea-11ea-9783-3c295130a840.jpg)
 
