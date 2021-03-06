@@ -119,4 +119,5 @@ $ ./mqtt_pub.sh
 ```
 
 # Screen shot
-![ScreenShot](https://user-images.githubusercontent.com/6020549/110201960-2f1dff80-7ea9-11eb-8737-b463fd6e02b0.jpg)
+![ScreenShot](https://user-images.githubusercontent.com/6020549/110209284-e2e5b600-7ece-11eb-8fb3-941e6fdf56c6.jpg)
+
