@@ -56,8 +56,6 @@ idf.py flash
 
 ![config-1](https://user-images.githubusercontent.com/6020549/110200312-a307da00-7ea0-11eb-85fa-c76f932b8023.jpg)
 
-You can choice Wifi setting.   
-
 ## Station Mode
 ![config-2](https://user-images.githubusercontent.com/6020549/110200315-a4390700-7ea0-11eb-8021-f8355818fbb2.jpg)
 
