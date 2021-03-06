@@ -10,11 +10,12 @@ Your fork is welcome.
 
 1. In this project directory, create a components directory.
 
-2. In the components directory, clone Mongoose.   
+2. In the components directory, clone Mongoose:
+```
 git clone https://github.com/cesanta/mongoose.git
+```
 
 3. In the new Mongoose directory, create a CMakeLists.txt file containing:
-
 ```
 idf_component_register(SRCS "mongoose.c" INCLUDE_DIRS ".")
 ```
