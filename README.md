@@ -118,7 +118,7 @@ $ chmod 777 ./mqtt_sub.sh
 $ ./mqtt_pub.sh
 ```
 
-# Screen shot
-PUBLISH->BROLER->SUBSCRIBE   
+# Screen Shot
+PUBLISH->BROKER->SUBSCRIBE   
 ![ScreenShot](https://user-images.githubusercontent.com/6020549/110209284-e2e5b600-7ece-11eb-8fb3-941e6fdf56c6.jpg)
 
