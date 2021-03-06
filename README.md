@@ -2,7 +2,7 @@
 MQTT Broker for esp-idf.   
 This project use [Mongoose networking library](https://github.com/cesanta/mongoose).   
 I forked from [here](https://github.com/bigw00d/esp32_mongoose_sample).   
-I tested  MG_VERSION "7.2".   
+I tested  mongoose VERSION 7.2.   
 Your fork is welcome.   
 
 
@@ -10,7 +10,7 @@ Your fork is welcome.
 
 1. In this project directory, create a components directory.
 
-2. In the components directory, clone Mongoose.
+2. In the components directory, clone Mongoose.   
 git clone https://github.com/cesanta/mongoose.git
 
 3. In the new Mongoose directory, create a CMakeLists.txt file containing:
