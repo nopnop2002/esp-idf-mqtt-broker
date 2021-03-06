@@ -1,34 +1,28 @@
 # esp-idf-mqtt-broker
 MQTT Broker for esp-idf.   
-This project use [Mongoose networking library](https://cesanta.com/docs/overview/intro.html).   
+This project use [Mongoose networking library](https://github.com/cesanta/mongoose).   
 I forked from [here](https://github.com/bigw00d/esp32_mongoose_sample).   
+I tested  MG_VERSION "7.2".   
 Your fork is welcome.   
 
----
+
+# Installation overview
 
 1. In this project directory, create a components directory.
 
-2. In the components directory, clone Mongoose:
+2. In the components directory, clone Mongoose.
 git clone https://github.com/cesanta/mongoose.git
 
-3. In the new Mongoose directory, create a component.mk file containing:
+3. In the new Mongoose directory, create a CMakeLists.txt file containing:
 
 ```
-COMPONENT_ADD_INCLUDEDIRS=.
+idf_component_register(SRCS "mongoose.c" INCLUDE_DIRS ".")
 ```
 
-4. You have to enable MG_ENABLE_MQTT_BROKER  in mongoose.h.
+4. Compile this project.
 
-```
-#ifndef MG_ENABLE_MQTT_BROKER
-#define MG_ENABLE_MQTT_BROKER 1
-#endif
-```
 
-5. Compile this project.
-
----
-
+# Installation for ESP32
 ```
 git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
 cd esp-idf-mqtt-broker
@@ -36,43 +30,54 @@ mkdir -p components
 cd components/
 git clone https://github.com/cesanta/mongoose.git
 cd mongoose/
-echo "COMPONENT_ADD_INCLUDEDIRS=." > component.mk
-vi mongoose.h
-Enable MG_ENABLE_MQTT_BROKER
+echo "idf_component_register(SRCS \"mongoose.c\" INCLUDE_DIRS \".\")" > CMakeLists.txt
 cd ../..
-make menuconfig
-make flash
+idf.py set-target esp32
+idf.py menuconfig
+idf.py flash
 ```
 
----
+# Installation for ESP32-S2
+```
+git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
+cd esp-idf-mqtt-broker
+mkdir -p components
+cd components/
+git clone https://github.com/cesanta/mongoose.git
+cd mongoose/
+echo "idf_component_register(SRCS \"mongoose.c\" INCLUDE_DIRS \".\")" > CMakeLists.txt
+cd ../..
+idf.py set-target esp32s2
+idf.py menuconfig
+idf.py flash
+```
 
-# Wifi Setting
+# Application Setting
+
+![config-1](https://user-images.githubusercontent.com/6020549/110200312-a307da00-7ea0-11eb-85fa-c76f932b8023.jpg)
 
 You can choice Wifi setting.   
 
-![config-1](https://user-images.githubusercontent.com/6020549/93414263-e6af5d00-f8db-11ea-903e-155e614709be.jpg)
-
-## Access Point Mode
-![config-4](https://user-images.githubusercontent.com/6020549/93414276-e8792080-f8db-11ea-99f6-df1bcf991487.jpg)
-
-SSID:SSID of ESP32   
-ESP32 have 192.168.4.1.   
-
 ## Station Mode
-![config-2](https://user-images.githubusercontent.com/6020549/93414269-e7e08a00-f8db-11ea-95f0-3de34ef65638.jpg)
+![config-2](https://user-images.githubusercontent.com/6020549/110200315-a4390700-7ea0-11eb-8021-f8355818fbb2.jpg)
 
 SSID:SSID of your Wifi router   
 ESP32 get IP using DHCP.    
 
 ## Station Mode of Static Address
-![config-3](https://user-images.githubusercontent.com/6020549/93414274-e8792080-f8db-11ea-897e-ed2dec19a8eb.jpg)
+![config-3](https://user-images.githubusercontent.com/6020549/110200316-a4390700-7ea0-11eb-9266-473ad7fb193e.jpg)
 
 SSID:SSID of your Wifi router   
 ESP32 set your specific IP.   
 
-----
+## Access Point Mode
+![config-4](https://user-images.githubusercontent.com/6020549/110200317-a4d19d80-7ea0-11eb-84ec-21f78f97930b.jpg)
 
-# Using MDNS hostname
+SSID:SSID of ESP32   
+ESP32 have 192.168.4.1.   
+
+
+## Using MDNS hostname
 You can use the MDNS hostname instead of the IP address.   
 You need to change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
 
@@ -82,46 +87,15 @@ You need to change the mDNS strict mode according to [this](https://github.com/e
 
 You can change MDNS hostname using menuconfig.   
 
-![config-6](https://user-images.githubusercontent.com/6020549/93414968-6be74180-f8dd-11ea-8622-10430a93a468.jpg)
+![config-5](https://user-images.githubusercontent.com/6020549/110200318-a56a3400-7ea0-11eb-8dfb-b07bbb03b0f1.jpg)
 
-----
+## Start MQTT Subscriber
+![config-6](https://user-images.githubusercontent.com/6020549/110200319-a56a3400-7ea0-11eb-9a42-1c3543c9b802.jpg)
 
-# Bug Fix to mongoose.c
+## Start MQTT Publisher
+![config-7](https://user-images.githubusercontent.com/6020549/110200403-2b867a80-7ea1-11eb-9d07-80fefa3d4b34.jpg)
 
-There is some bug in mongoose.c.   
-So you have to fix manually.   
-
-```
-void mg_mqtt_suback(struct mg_connection *nc, uint8_t *qoss, size_t qoss_len,
-                    uint16_t message_id) {
-  size_t i;
-  uint16_t netbytes;
-
-  //Comment by nopnop2002
-  //mg_send_mqtt_header(nc, MG_MQTT_CMD_SUBACK, MG_MQTT_QOS(1), 2 + qoss_len);
-  //Add by nopnop2002
-  mg_send_mqtt_header(nc, MG_MQTT_CMD_SUBACK, 0, 2 + qoss_len);
-
-  netbytes = htons(message_id);
-  mg_send(nc, &netbytes, 2);
-
-  for (i = 0; i < qoss_len; i++) {
-    mg_send(nc, &qoss[i], 1);
-  }
-}
-```
-
----
-
-# MQTT Broker over web sockets
-
-![config-5](https://user-images.githubusercontent.com/6020549/93414277-e911b700-f8db-11ea-8045-1251788906e8.jpg)
-
-You can test WebSocket using test-socket.py.   
-I forked [this](http://www.steves-internet-guide.com/download/websockets-publish-subscribe/).   
-
-```
-curl https://bootstrap.pypa.io/get-pip.py -o - | sudo python
-sudo pip install paho-mqtt
-python ./test-socket.py
-```
+# Limitations
+The current mg_strcmp() function does not support wildcard topics.   
+So I replaced this with _mg_strcmp() function.   
+The _mg_strcmp() function does not support the "+" wildcard.   

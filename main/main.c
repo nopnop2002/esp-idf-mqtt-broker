@@ -28,17 +28,6 @@
    the config you want - ie #define ESP_WIFI_SSID "mywifissid"
 */
 
-#define ESP_WIFI_SSID		CONFIG_ESP_WIFI_SSID
-#define ESP_WIFI_PASS		CONFIG_ESP_WIFI_PASSWORD
-
-#if CONFIG_AP_MODE
-#define MAX_STA_CONN		CONFIG_ESP_MAX_STA_CONN
-#endif
-#if CONFIG_ST_MODE
-#define ESP_MAXIMUM_RETRY	CONFIG_ESP_MAXIMUM_RETRY
-#define MDNS_HOSTNAME		CONFIG_MDNS_HOSTNAME
-#endif
-
 #if CONFIG_ST_MODE
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
@@ -49,10 +38,7 @@ static int s_retry_num = 0;
  * - are we connected to the AP with an IP? */
 const int WIFI_CONNECTED_BIT = BIT0;
 
-SemaphoreHandle_t xSemaphore_subscriber;
-
-static const char *TAG = "main";
-
+static const char *TAG = "MAIN";
 
 static void event_handler(void* arg, esp_event_base_t event_base, 
 								int32_t event_id, void* event_data)
@@ -76,7 +62,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 	if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
 		esp_wifi_connect();
 	} else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-		if (s_retry_num < ESP_MAXIMUM_RETRY) {
+		if (s_retry_num < CONFIG_ESP_MAXIMUM_RETRY) {
 			esp_wifi_connect();
 			xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
 			s_retry_num++;
@@ -106,14 +92,14 @@ void wifi_init_softap()
 
 	wifi_config_t wifi_config = {
 		.ap = {
-			.ssid = ESP_WIFI_SSID,
-			.ssid_len = strlen(ESP_WIFI_SSID),
-			.password = ESP_WIFI_PASS,
-			.max_connection = MAX_STA_CONN,
+			.ssid = CONFIG_ESP_WIFI_SSID,
+			.ssid_len = strlen(CONFIG_ESP_WIFI_SSID),
+			.password = CONFIG_ESP_WIFI_PASSWORD,
+			.max_connection = CONFIG_ESP_MAX_STA_CONN,
 			.authmode = WIFI_AUTH_WPA_WPA2_PSK
 		},
 	};
-	if (strlen(ESP_WIFI_PASS) == 0) {
+	if (strlen(CONFIG_ESP_WIFI_PASSWORD) == 0) {
 		wifi_config.ap.authmode = WIFI_AUTH_OPEN;
 	}
 
@@ -122,7 +108,7 @@ void wifi_init_softap()
 	ESP_ERROR_CHECK(esp_wifi_start());
 
 	ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s",
-			 ESP_WIFI_SSID, ESP_WIFI_PASS);
+			 CONFIG_ESP_WIFI_SSID, CONFIG_ESP_WIFI_PASSWORD);
 }
 #endif
 
@@ -256,8 +242,8 @@ void wifi_init_sta()
 
 	wifi_config_t wifi_config = {
 		.sta = {
-			.ssid = ESP_WIFI_SSID,
-			.password = ESP_WIFI_PASS
+			.ssid = CONFIG_ESP_WIFI_SSID,
+			.password = CONFIG_ESP_WIFI_PASSWORD
 		},
 	};
 	ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
@@ -266,7 +252,7 @@ void wifi_init_sta()
 
 	ESP_LOGI(TAG, "wifi_init_sta finished.");
 	ESP_LOGI(TAG, "connect to ap SSID:%s password:%s",
-			 ESP_WIFI_SSID, ESP_WIFI_PASS);
+			 CONFIG_ESP_WIFI_SSID, CONFIG_ESP_WIFI_PASSWORD);
 
 	// wait for IP_EVENT_STA_GOT_IP
 	while(1) {
@@ -290,8 +276,8 @@ void initialise_mdns(void)
 	//initialize mDNS
 	ESP_ERROR_CHECK( mdns_init() );
 	//set mDNS hostname (required if you want to advertise services)
-	ESP_ERROR_CHECK( mdns_hostname_set(MDNS_HOSTNAME) );
-	ESP_LOGI(TAG, "mdns hostname set to: [%s]", MDNS_HOSTNAME);
+	ESP_ERROR_CHECK( mdns_hostname_set(CONFIG_MDNS_HOSTNAME) );
+	ESP_LOGI(TAG, "mdns hostname set to: [%s]", CONFIG_MDNS_HOSTNAME);
 
 #if 0
 	//set default mDNS instance name
@@ -300,11 +286,9 @@ void initialise_mdns(void)
 }
 #endif
 
-char self_address[32];	// Self IP Address
-void tcp_server(void *pvParameters);
-void http_server(void *pvParameters);
 void mqtt_server(void *pvParameters);
 void mqtt_subscriber(void *pvParameters);
+void mqtt_publisher(void *pvParameters);
 
 void app_main()
 {
@@ -337,25 +321,22 @@ void app_main()
 	ESP_LOGI(TAG, "IP Address : %s", ip4addr_ntoa(&ip_info.ip));
 	ESP_LOGI(TAG, "Subnet mask: %s", ip4addr_ntoa(&ip_info.netmask));
 	ESP_LOGI(TAG, "Gateway	  : %s", ip4addr_ntoa(&ip_info.gw));
-	sprintf(self_address, "%s", ip4addr_ntoa(&ip_info.ip));
 
-	xSemaphore_subscriber = xSemaphoreCreateBinary();
-	configASSERT( xSemaphore_subscriber );
-
-#if !CONFIG_WEB_SOCKET
 	/* Start Broker using tcp transport */
-	xTaskCreate(tcp_server, "TCP", 1024*4, NULL, 2, NULL);
-#endif
-
-#if CONFIG_WEB_SOCKET
-	/* Start Broker over web sockets */
-	//xTaskCreate(mqtt_server, "MQTT", 1024*4, NULL, 2, NULL);
-	xTaskCreate(http_server, "HTTP", 1024*4, NULL, 2, NULL);
-#endif
+	ESP_LOGI(TAG, "MQTT broker started on %s", ip4addr_ntoa(&ip_info.ip));
+	xTaskCreate(mqtt_server, "BROKER", 1024*4, NULL, 2, NULL);
 
 #if CONFIG_SUBSCRIBE
 	/* Start Subscriber */
-	xSemaphoreTake(xSemaphore_subscriber, portMAX_DELAY);
-	xTaskCreate(mqtt_subscriber, "SUBSCRIBER", 1024*4, NULL, 2, NULL);
+	char cparam1[64];
+	sprintf(cparam1, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
+	xTaskCreate(mqtt_subscriber, "SUBSCRIBE", 1024*4, (void *)cparam1, 2, NULL);
+#endif
+
+#if CONFIG_PUBLISH
+	/* Start Publisher */
+	char cparam2[64];
+	sprintf(cparam2, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
+	xTaskCreate(mqtt_publisher, "PUBLISH", 1024*4, (void *)cparam2, 2, NULL);
 #endif
 }

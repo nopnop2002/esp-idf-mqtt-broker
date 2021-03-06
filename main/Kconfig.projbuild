@@ -1,4 +1,4 @@
-menu "Wi-Fi Configuration"
+menu "Application Configuration"
 
 	choice WIFI_MODE
 		prompt "Wi-Fi Access mode"
@@ -77,15 +77,15 @@ menu "Wi-Fi Configuration"
 			Static Netmask for Station.
 
 	config SUBSCRIBE
-		bool "Show all incoming message"
-		default true
-		help
-			Show all incoming message
-
-	config WEB_SOCKET
-		bool "Enable over web sockets (Expermental)"
+		bool "Start MQTT SUBSCRIBER"
 		default false
 		help
-			Broker over web sockets
+			Start MQTT SUBSCRIBER.
+
+	config PUBLISH
+		bool "Start MQTT PUBLISHER"
+		default false
+		help
+			Start MQTT PUBLISHER.
 
 endmenu
