@@ -102,7 +102,7 @@ The _mg_strcmp() function does not support the "+" wildcard.
 # Subscribe using mosquitto-clients
 ```
 $ sudo apt install mosquitto-clients moreutils
-$ chmod 777 .//mqtt_sub.sh
+$ chmod 777 ./mqtt_sub.sh
 $ ./mqtt_sub.sh
 21/03/06 18:14:19 esp32 TickCount=110964
 21/03/06 18:14:20 esp32 TickCount=111065
@@ -114,7 +114,7 @@ $ ./mqtt_sub.sh
 # Publish using mosquitto-clients
 ```
 $ sudo apt install mosquitto-clients moreutils
-$ chmod 777 .//mqtt_sub.sh
+$ chmod 777 ./mqtt_sub.sh
 $ ./mqtt_pub.sh
 ```
 
