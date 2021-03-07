@@ -87,9 +87,9 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	  }
 	  case MQTT_CMD_PINGREQ: {
 		ESP_LOGI(pcTaskGetName(NULL), "PINGREQ %p", c->fd);
-        mg_mqtt_pong(c); // Send PINGRESP
+		mg_mqtt_pong(c); // Send PINGRESP
 		break;
-      }
+	  }
 	}
   } else if (ev == MG_EV_CLOSE) {
 	// Client disconnects. Remove from the subscription list
