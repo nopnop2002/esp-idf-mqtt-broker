@@ -52,6 +52,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	ESP_LOGD(pcTaskGetName(NULL),"cmd %d qos %d", mm->cmd, mm->qos);
 	switch (mm->cmd) {
 	  case MQTT_CMD_CONNECT: {
+		ESP_LOGI(pcTaskGetName(NULL), "CONNECT");
 		// Client connects. Return success, do not check user/password
 		uint8_t response[] = {0, 0};
 		mg_mqtt_send_header(c, MQTT_CMD_CONNACK, 0, sizeof(response));
@@ -84,6 +85,11 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		}
 		break;
 	  }
+	  case MQTT_CMD_PINGREQ: {
+		ESP_LOGI(pcTaskGetName(NULL), "PINGREQ %p", c->fd);
+        mg_mqtt_pong(c); // Send PINGRESP
+		break;
+      }
 	}
   } else if (ev == MG_EV_CLOSE) {
 	// Client disconnects. Remove from the subscription list
