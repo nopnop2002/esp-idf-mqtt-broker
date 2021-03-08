@@ -123,19 +123,19 @@ $ ./mqtt_pub.sh
 ```
 
 # Will test using mosquitto-clients
-- Do the following in Terminal #1:   
+- In Terminal #1, do the following:   
 ```
 mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
 ```
 
-- Do the following in Terminal #2:   
+- Open new terminal. In Terminal #2, do the following:   
 ```
 mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
 ```
 
-- Execute Control C in Terminal # 1:   
+- Press Control+C in Terminal #1:   
 
-- The following is displayed in Terminal # 2:   
+- The following is displayed in Terminal #2:   
 ```
 topic/will GOODBYE
 ```
