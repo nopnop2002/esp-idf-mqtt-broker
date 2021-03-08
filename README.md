@@ -98,7 +98,7 @@ You can change MDNS hostname using menuconfig.
 - subscribe wildcard topics   
 The current mg_strcmp() function does not support wildcard topics.   
 So I replaced this with _mg_strcmp() function.   
-But _mg_strcmp() function does not support the "+" wildcard.   
+However, _mg_strcmp() function does not support the "+" wildcard.   
 If someone makes a more elegant code, I'll replace it.   
 
 - will topics   
