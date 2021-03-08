@@ -131,12 +131,12 @@ $ ./mqtt_pub.sh
 # Notify topic of will using mosquitto-clients
 - In Terminal #1, do the following:   
 ```
-mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
+$ mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
 ```
 
 - Open new terminal. In Terminal #2, do the following:   
 ```
-mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#"
+$ mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#"
 ```
 
 - Press Control+C in Terminal #1:   
@@ -148,8 +148,8 @@ topic/will GOODBYE
 
 # Unsubscribe using python and paho
 ```
-pip install paho
-python unsub_example.py
+$ pip install paho
+$ python unsub_example.py
 
 Connected with result code 0
 subscribe hoge
