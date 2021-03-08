@@ -103,6 +103,13 @@ The _mg_strcmp() function does not support the "+" wildcard.
 - will topics   
 will qos and will retain are ignored.   
 
+- Unsupported MQTT request   
+Not responding to these requests:   
+UNSUBSCRIBE   
+PUBREC   
+PUBREL   
+PUBCOMP   
+
 # Subscribe using mosquitto-clients
 ```
 $ sudo apt install mosquitto-clients moreutils
