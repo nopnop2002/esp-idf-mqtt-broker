@@ -95,9 +95,13 @@ You can change MDNS hostname using menuconfig.
 ![config-7](https://user-images.githubusercontent.com/6020549/110200403-2b867a80-7ea1-11eb-9d07-80fefa3d4b34.jpg)
 
 # Limitations
+- subscribe wildcard topics   
 The current mg_strcmp() function does not support wildcard topics.   
 So I replaced this with _mg_strcmp() function.   
 The _mg_strcmp() function does not support the "+" wildcard.   
+
+- will topics   
+will qos and will retain are ignored.   
 
 # Subscribe using mosquitto-clients
 ```
@@ -116,6 +120,24 @@ $ ./mqtt_sub.sh
 $ sudo apt install mosquitto-clients moreutils
 $ chmod 777 ./mqtt_sub.sh
 $ ./mqtt_pub.sh
+```
+
+# Will test using mosquitto-clients
+- Do the following in Terminal #1:   
+```
+mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
+```
+
+- Do the following in Terminal #2:   
+```
+mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
+```
+
+- Execute Control C in Terminal # 1:   
+
+- The following is displayed in Terminal # 2:   
+```
+topic/will GOODBYE
 ```
 
 # Screen Shot

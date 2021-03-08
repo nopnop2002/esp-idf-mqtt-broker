@@ -172,7 +172,7 @@ void wifi_init_sta()
 	ESP_LOGI(TAG, "parseAddress ret=%d ip=%d.%d.%d.%d", ret, ip[0], ip[1], ip[2], ip[3]);
 	if (!ret) {
 		ESP_LOGE(TAG, "CONFIG_STATIC_IP_ADDRESS [%s] not correct", CONFIG_STATIC_IP_ADDRESS);
-	while(1) { vTaskDelay(1); }
+		while(1) { vTaskDelay(1); }
 	}
 
 	int gw[4];
@@ -180,7 +180,7 @@ void wifi_init_sta()
 	ESP_LOGI(TAG, "parseAddress ret=%d gw=%d.%d.%d.%d", ret, gw[0], gw[1], gw[2], gw[3]);
 	if (!ret) {
 		ESP_LOGE(TAG, "CONFIG_STATIC_GW_ADDRESS [%s] not correct", CONFIG_STATIC_GW_ADDRESS);
-	while(1) { vTaskDelay(1); }
+		while(1) { vTaskDelay(1); }
 	}
 
 	int nm[4];
@@ -188,7 +188,7 @@ void wifi_init_sta()
 	ESP_LOGI(TAG, "parseAddress ret=%d nm=%d.%d.%d.%d", ret, nm[0], nm[1], nm[2], nm[3]);
 	if (!ret) {
 		ESP_LOGE(TAG, "CONFIG_STATIC_NM_ADDRESS [%s] not correct", CONFIG_STATIC_NM_ADDRESS);
-	while(1) { vTaskDelay(1); }
+		while(1) { vTaskDelay(1); }
 	}
 
 #if ESP_IDF_VERSION_MAJOR >= 4 && ESP_IDF_VERSION_MINOR >= 1
@@ -263,9 +263,9 @@ void wifi_init_sta()
 		   pdTRUE,		  /* WIFI_CONNECTED_BIT should be cleared before returning. */
 		   pdFALSE,		  /* Don't waitfor both bits, either bit will do. */
 		   portMAX_DELAY);/* Wait forever. */
-	   if ( ( uxBits & WIFI_CONNECTED_BIT ) == WIFI_CONNECTED_BIT ){
-		   ESP_LOGI(TAG, "WIFI_CONNECTED_BIT");
-		   break;
+		if ( ( uxBits & WIFI_CONNECTED_BIT ) == WIFI_CONNECTED_BIT ){
+			ESP_LOGI(TAG, "WIFI_CONNECTED_BIT");
+			break;
 	   }
 	}
 	ESP_LOGI(TAG, "Got IP Address.");
@@ -295,8 +295,8 @@ void app_main()
 	//Initialize NVS
 	esp_err_t ret = nvs_flash_init();
 	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-	  ESP_ERROR_CHECK(nvs_flash_erase());
-	  ret = nvs_flash_init();
+		ESP_ERROR_CHECK(nvs_flash_erase());
+		ret = nvs_flash_init();
 	}
 	ESP_ERROR_CHECK(ret);
 	

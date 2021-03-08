@@ -58,8 +58,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   } else if (ev == MG_EV_MQTT_MSG) {
 	// When we get echo response, print it
 	struct mg_mqtt_message *mm = (struct mg_mqtt_message *) ev_data;
-    ESP_LOGI(pcTaskGetName(NULL), "RECEIVED %.*s <- %.*s", (int) mm->data.len, mm->data.ptr,
-                  (int) mm->topic.len, mm->topic.ptr);
+	ESP_LOGI(pcTaskGetName(NULL), "RECEIVED %.*s <- %.*s", (int) mm->data.len, mm->data.ptr,
+				  (int) mm->topic.len, mm->topic.ptr);
   }
 
 #if 0
@@ -96,20 +96,20 @@ void mqtt_subscriber(void *pvParameters)
 	//static const char *url = "mqtt://broker.hivemq.com:1883";
 	//mg_mqtt_connect(&mgr, url, &opts, fn, &done);  // Create client connection
 	//mg_mqtt_connect(&mgr, url, &opts, fn, &done);  // Create client connection
-    struct mg_connection *mgc;
-	mgc = mg_mqtt_connect(&mgr, url, &opts, fn, &url);  // Create client connection
+	struct mg_connection *mgc;
+	mgc = mg_mqtt_connect(&mgr, url, &opts, fn, &url);	// Create client connection
 
 	/* Processing events */
-    s_wifi_event_group = xEventGroupCreate();
+	s_wifi_event_group = xEventGroupCreate();
 
 	while (1) {
-        EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-            MQTT_CONNECTED_BIT,
-            pdTRUE,
-            pdTRUE,
-            0);
-        ESP_LOGD(pcTaskGetName(NULL), "bits=%x", bits);
-        if ((bits & MQTT_CONNECTED_BIT) != 0) {
+		EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
+			MQTT_CONNECTED_BIT,
+			pdTRUE,
+			pdTRUE,
+			0);
+		ESP_LOGD(pcTaskGetName(NULL), "bits=%x", bits);
+		if ((bits & MQTT_CONNECTED_BIT) != 0) {
 			struct mg_str topic = mg_str(sub_topic);
 			mg_mqtt_sub(mgc, &topic);
 			ESP_LOGI(pcTaskGetName(NULL), "SUBSCRIBED to %.*s", (int) topic.len, topic.ptr);
