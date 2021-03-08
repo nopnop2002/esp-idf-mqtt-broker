@@ -104,7 +104,7 @@ The _mg_strcmp() function does not support the "+" wildcard.
 will qos and will retain are ignored.   
 
 - Unsupported MQTT request   
-Not responding to these requests:   
+Do not respond to these MQTT requests:   
 UNSUBSCRIBE   
 PUBREC   
 PUBREL   
