@@ -32,6 +32,7 @@ client.on_disconnect = on_disconnect   # 切断時のコールバックを登録
 client.on_message = on_message         # メッセージ到着時のコールバック
 
 client.will_set('system/message', 'Subscriber Down')
-client.connect("192.168.10.141", 1883, 60)  # 接続先は自分自身
+#client.connect("192.168.10.141", 1883, 60)  # 接続先は自分自身
+client.connect("esp32-broker.local", 1883, 60)  # 接続先は自分自身
 
 client.loop_forever()                  # 永久ループして待ち続ける
