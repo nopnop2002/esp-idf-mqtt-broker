@@ -122,7 +122,7 @@ $ chmod 777 ./mqtt_sub.sh
 $ ./mqtt_pub.sh
 ```
 
-# Will test using mosquitto-clients
+# How to test Will Topic using mosquitto-clients
 - In Terminal #1, do the following:   
 ```
 mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
