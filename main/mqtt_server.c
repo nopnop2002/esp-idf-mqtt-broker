@@ -94,6 +94,18 @@ int _mg_mqtt_will_topic(struct mg_mqtt_message *msg, struct mg_str *topic,
 	return 1;
 }
 
+int _mg_mqtt_next_unsub(struct mg_mqtt_message *msg, struct mg_str *topic, int pos) {
+	unsigned char *buf = (unsigned char *) msg->dgram.ptr + pos;
+	int new_pos;
+	if ((size_t) pos >= msg->dgram.len) return -1;
+
+	topic->len = buf[0] << 8 | buf[1];
+	topic->ptr = (char *) buf + 2;
+	new_pos = pos + 2 + topic->len + 0;
+	if ((size_t) new_pos > msg->dgram.len) return -1;
+	//*qos = buf[2 + topic->len];
+	return new_pos;
+}
 
 // Event handler function
 static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
@@ -137,6 +149,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	  }
 	  case MQTT_CMD_SUBSCRIBE: {
 		// Client subscribes
+		ESP_LOGI(pcTaskGetName(NULL), "MQTT_CMD_SUBSCRIBE");
+		//_mg_mqtt_dump("SUBSCRIBE", mm);
 		int pos = 4;  // Initial topic offset, where ID ends
 		uint8_t qos;
 		struct mg_str topic;
@@ -147,6 +161,36 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		  sub->qos = qos;
 		  LIST_ADD_HEAD(struct sub, &s_subs, sub);
 		  ESP_LOGI(pcTaskGetName(NULL), "SUB %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
+
+		  for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
+			ESP_LOGI(pcTaskGetName(NULL), "SUB[a] %p [%.*s]", sub->c->fd, (int) sub->topic.len, sub->topic.ptr);
+		  }
+		}
+		break;
+	  }
+	  case MQTT_CMD_UNSUBSCRIBE: {
+		// Client unsubscribes
+		ESP_LOGI(pcTaskGetName(NULL), "MQTT_CMD_UNSUBSCRIBE");
+		//_mg_mqtt_dump("UNSUBSCRIBE", mm);
+		int pos = 4;  // Initial topic offset, where ID ends
+		struct mg_str topic;
+		while ((pos = _mg_mqtt_next_unsub(mm, &topic, pos)) > 0) {
+		  ESP_LOGI(pcTaskGetName(NULL), "UNSUB %p [%.*s]", c->fd, (int) topic.len, topic.ptr);
+		  // Remove from the subscription list
+		  for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
+			ESP_LOGI(pcTaskGetName(NULL), "SUB[b] %p [%.*s]", sub->c->fd, (int) sub->topic.len, sub->topic.ptr);
+		  }
+		  for (struct sub *next, *sub = s_subs; sub != NULL; sub = next) {
+			next = sub->next;
+			ESP_LOGD(pcTaskGetName(NULL), "c->fd=%p sub->c->fd=%p", c->fd, sub->c->fd);
+			if (c != sub->c) continue;
+			if (strncmp(topic.ptr, sub->topic.ptr, topic.len) != 0) continue;
+			ESP_LOGI(pcTaskGetName(NULL), "DELETE %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
+			LIST_DELETE(struct sub, &s_subs, sub);
+  		  }
+		  for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
+			ESP_LOGI(pcTaskGetName(NULL), "SUB[a] %p [%.*s]", sub->c->fd, (int) sub->topic.len, sub->topic.ptr);
+		  }
 		}
 		break;
 	  }
@@ -177,7 +221,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		next = sub->next;
 		ESP_LOGD(pcTaskGetName(NULL), "c->fd=%p sub->c->fd=%p", c->fd, sub->c->fd);
 		if (c != sub->c) continue;
-		ESP_LOGI(pcTaskGetName(NULL), "UNSUB %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
+		ESP_LOGI(pcTaskGetName(NULL), "DELETE %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
 		LIST_DELETE(struct sub, &s_subs, sub);
 	}
 
@@ -223,7 +267,7 @@ void mqtt_server(void *pvParameters)
 	/* Starting Broker */
 	ESP_LOGI(pcTaskGetName(NULL), "start");
 	struct mg_mgr mgr;
-	//mg_log_set("3"); // Set to log level to LL_DEBUG
+	mg_log_set("3"); // Set to log level to LL_DEBUG
 	mg_mgr_init(&mgr);
 	mg_mqtt_listen(&mgr, s_listen_on, fn, NULL);  // Create MQTT listener
 

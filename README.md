@@ -105,7 +105,6 @@ will qos and will retain are ignored.
 
 - Unsupported MQTT request   
 Do not respond to these MQTT requests:   
-UNSUBSCRIBE   
 PUBREC   
 PUBREL   
 PUBCOMP   
@@ -146,6 +145,26 @@ mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#"
 ```
 topic/will GOODBYE
 ```
+
+# How to test Unsubscribe Request
+```
+pip install paho
+python unsub_example.py
+
+Connected with result code 0
+subscribe hoge
+
+Received message 'b'test'' on topic 'hoge/1' with QoS 1
+unsubscribe hoge, subscribe fuga
+
+Received message 'b'test'' on topic 'fuga/1' with QoS 1
+unsubscribe fuga, subscribe hoge
+```
+
+First, it subscribes to the topic [hoge/#].   
+When it receives the topic [hoge/1], it unsubscribes [hoge/#] and subscribes to [fuga/#].   
+When it receives the topic [fuga/1], it unsubscribes [fuga/#] and subscribes to [hoge/#] again.   
+
 
 # Screen Shot
 The message flows like this:   
