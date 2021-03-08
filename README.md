@@ -35,7 +35,7 @@ echo "idf_component_register(SRCS \"mongoose.c\" INCLUDE_DIRS \".\")" > CMakeLis
 cd ../..
 idf.py set-target esp32
 idf.py menuconfig
-idf.py flash
+idf.py flash monitor
 ```
 
 # Installation for ESP32-S2
@@ -50,7 +50,7 @@ echo "idf_component_register(SRCS \"mongoose.c\" INCLUDE_DIRS \".\")" > CMakeLis
 cd ../..
 idf.py set-target esp32s2
 idf.py menuconfig
-idf.py flash
+idf.py flash monitor
 ```
 
 # Application Setting
@@ -130,7 +130,7 @@ mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic
 
 - Open new terminal. In Terminal #2, do the following:   
 ```
-mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#" --will-topic "topic/will" --will-payload "GOODBYE"
+mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#"
 ```
 
 - Press Control+C in Terminal #1:   

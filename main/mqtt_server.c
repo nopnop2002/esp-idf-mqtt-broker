@@ -55,7 +55,7 @@ int _mg_strcmp(const struct mg_str str1, const struct mg_str str2) {
 	return 0;
 }
 
-void mg_mqtt_dump(char * tag, struct mg_mqtt_message *msg) {
+void _mg_mqtt_dump(char * tag, struct mg_mqtt_message *msg) {
 	unsigned char *buf = (unsigned char *) msg->dgram.ptr;
 	ESP_LOGI(pcTaskGetName(NULL),"%s=%x %x", tag, buf[0], buf[1]);
 	int length = buf[1] + 2;
@@ -66,7 +66,7 @@ void mg_mqtt_dump(char * tag, struct mg_mqtt_message *msg) {
 #define WILL_QOS	0x18
 #define WILL_RETAIN	0x20
 
-int mg_mqtt_will_topic(struct mg_mqtt_message *msg, struct mg_str *topic, 
+int _mg_mqtt_will_topic(struct mg_mqtt_message *msg, struct mg_str *topic, 
 		struct mg_str *payload, uint8_t *qos, uint8_t *retain) {
 	topic->len = 0;
 	payload->len = 0;
@@ -74,23 +74,23 @@ int mg_mqtt_will_topic(struct mg_mqtt_message *msg, struct mg_str *topic,
 	int Protocol_Name_length =	buf[2] << 8 | buf[3];
 	int Connect_Flags_position = Protocol_Name_length + 5;
 	uint8_t Connect_Flags = buf[Connect_Flags_position];
-	ESP_LOGD("mg_mqtt_will_topic", "Connect_Flags=%x", Connect_Flags);
+	ESP_LOGD("_mg_mqtt_will_topic", "Connect_Flags=%x", Connect_Flags);
 	uint8_t Will_Flag = (Connect_Flags & WILL_FLAG) >> 2;
 	*qos = (Connect_Flags & WILL_QOS) >> 3;
 	*retain = (Connect_Flags & WILL_RETAIN) >> 5;
-	ESP_LOGD("mg_mqtt_will_topic", "Will_Flag=%d *qos=%x *retain=%x", Will_Flag, *qos, *retain);
+	ESP_LOGD("_mg_mqtt_will_topic", "Will_Flag=%d *qos=%x *retain=%x", Will_Flag, *qos, *retain);
 	if (Will_Flag == 0) return 0;
 
 	int Client_Identifier_length = buf[Connect_Flags_position+3] << 8 | buf[Connect_Flags_position+4];
-	ESP_LOGD("mg_mqtt_will_topic", "Client_Identifier_length=%d", Client_Identifier_length);
+	ESP_LOGD("_mg_mqtt_will_topic", "Client_Identifier_length=%d", Client_Identifier_length);
 	int Will_Topic_position = Protocol_Name_length + Client_Identifier_length + 10;
 	topic->len = buf[Will_Topic_position] << 8 | buf[Will_Topic_position+1];
 	topic->ptr = (char *)&(buf[Will_Topic_position]) + 2;
-	ESP_LOGI("mg_mqtt_will_topic", "topic->len=%d topic->ptr=[%.*s]", topic->len, topic->len, topic->ptr);
+	ESP_LOGI("_mg_mqtt_will_topic", "topic->len=%d topic->ptr=[%.*s]", topic->len, topic->len, topic->ptr);
 	int Will_Payload_position = Will_Topic_position + topic->len + 2;
 	payload->len = buf[Will_Payload_position] << 8 | buf[Will_Payload_position+1];
 	payload->ptr = (char *)&(buf[Will_Payload_position]) + 2;
-	ESP_LOGI("mg_mqtt_will_topic", "payload->len=%d payload->ptr=[%.*s]", payload->len, payload->len, payload->ptr);
+	ESP_LOGI("_mg_mqtt_will_topic", "payload->len=%d payload->ptr=[%.*s]", payload->len, payload->len, payload->ptr);
 	return 1;
 }
 
@@ -105,12 +105,12 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		ESP_LOGI(pcTaskGetName(NULL), "CONNECT");
 
 		// Parse the header to retrieve will information.
-		//mg_mqtt_dump("CONNECT", mm);
+		//_mg_mqtt_dump("CONNECT", mm);
 		struct mg_str topic;
 		struct mg_str payload;
 		uint8_t qos;
 		uint8_t retain;
-		int willFlag = mg_mqtt_will_topic(mm, &topic, &payload, &qos, &retain);
+		int willFlag = _mg_mqtt_will_topic(mm, &topic, &payload, &qos, &retain);
 
 		// Add Will topic to s_wills
 		if (willFlag == 1) {
@@ -187,7 +187,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		for (struct will *will = s_wills; will != NULL; will = will->next) {
 			ESP_LOGI(pcTaskGetName(NULL), "WILL(ALL) %p [%.*s] [%.*s] %d %d", 
 				will->c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
-			if (c == will->c) continue;
+			//if (c == will->c) continue;
+			if (sub->c == will->c) continue;
 			ESP_LOGI(pcTaskGetName(NULL), "WILL(CMP) %p [%.*s] [%.*s] %d %d", 
 				will->c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
 			if (_mg_strcmp(will->topic, sub->topic) != 0) continue;
