@@ -267,7 +267,7 @@ void mqtt_server(void *pvParameters)
 	/* Starting Broker */
 	ESP_LOGI(pcTaskGetName(NULL), "start");
 	struct mg_mgr mgr;
-	mg_log_set("3"); // Set to log level to LL_DEBUG
+	//mg_log_set("3"); // Set to log level to LL_DEBUG
 	mg_mgr_init(&mgr);
 	mg_mqtt_listen(&mgr, s_listen_on, fn, NULL);  // Create MQTT listener
 
