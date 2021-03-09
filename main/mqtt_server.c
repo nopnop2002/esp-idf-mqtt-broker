@@ -106,6 +106,7 @@ int _mg_strcmp(const struct mg_str str1, const struct mg_str str2) {
 	if (i2 < str2.len) return -1;
 	return 0;
 }
+
 void _mg_mqtt_dump(char * tag, struct mg_mqtt_message *msg) {
 	unsigned char *buf = (unsigned char *) msg->dgram.ptr;
 	ESP_LOGI(pcTaskGetName(NULL),"%s=%x %x", tag, buf[0], buf[1]);
@@ -150,19 +151,6 @@ int _mg_mqtt_parse_header(struct mg_mqtt_message *msg, struct mg_str *client, st
 	payload->ptr = (char *)&(buf[Will_Payload_position]) + 2;
 	ESP_LOGI("_mg_mqtt_parse_header", "payload->len=%d payload->ptr=[%.*s]", payload->len, payload->len, payload->ptr);
 	return 1;
-}
-
-int _mg_mqtt_next_unsub(struct mg_mqtt_message *msg, struct mg_str *topic, int pos) {
-	unsigned char *buf = (unsigned char *) msg->dgram.ptr + pos;
-	int new_pos;
-	if ((size_t) pos >= msg->dgram.len) return -1;
-
-	topic->len = buf[0] << 8 | buf[1];
-	topic->ptr = (char *) buf + 2;
-	new_pos = pos + 2 + topic->len + 0;
-	if ((size_t) new_pos > msg->dgram.len) return -1;
-	//*qos = buf[2 + topic->len];
-	return new_pos;
 }
 
 int _mg_mqtt_status() {
@@ -282,7 +270,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		//_mg_mqtt_dump("UNSUBSCRIBE", mm);
 		int pos = 4;  // Initial topic offset, where ID ends
 		struct mg_str topic;
-		while ((pos = _mg_mqtt_next_unsub(mm, &topic, pos)) > 0) {
+		while ((pos = mg_mqtt_next_unsub(mm, &topic, pos)) > 0) {
 		  ESP_LOGI(pcTaskGetName(NULL), "UNSUB %p [%.*s]", c->fd, (int) topic.len, topic.ptr);
 		  // Remove from the subscription list
 		  for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {

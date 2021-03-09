@@ -53,6 +53,10 @@ idf.py menuconfig
 idf.py flash monitor
 ```
 
+# Software requiment
+- mongoose ver7.3 or later.
+Because mg_mqtt_next_unsub was added in mongoose ver7.3.
+
 # Application Setting
 
 ![config-1](https://user-images.githubusercontent.com/6020549/110200312-a307da00-7ea0-11eb-85fa-c76f932b8023.jpg)
