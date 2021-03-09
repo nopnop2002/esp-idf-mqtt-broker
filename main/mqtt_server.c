@@ -38,7 +38,8 @@ struct will {
 };
 static struct will *s_wills = NULL;
 
-// Wildcard support version
+#if 0
+// Wildcard(#) support version
 int _mg_strcmp(const struct mg_str str1, const struct mg_str str2) {
 	size_t i = 0;
 	while (i < str1.len && i < str2.len) {
@@ -54,7 +55,49 @@ int _mg_strcmp(const struct mg_str str1, const struct mg_str str2) {
 	if (i < str2.len) return -1;
 	return 0;
 }
+#endif
 
+// Wildcard(#/+) support version
+int _mg_strcmp(const struct mg_str str1, const struct mg_str str2) {
+	size_t i1 = 0;
+	size_t i2 = 0;
+	while (i1 < str1.len && i2 < str2.len) {
+		int c1 = str1.ptr[i1];
+		int c2 = str2.ptr[i2];
+		//printf("c1=%c c2=%c\n",c1, c2);
+
+		// str2=[/hoge/#]
+		if (c2 == '#') return 0;
+
+		// str2=[/hoge/+/123]
+		// Search next slash
+		if (c2 == '+') {
+			// str1=[/hoge//123]
+			// str2=[/hoge/+/123]
+			if (c1 == '/') {
+				i2++;
+			// str1=[/hoge/123/123]
+			// str2=[/hoge/+/123]
+			} else {
+				for (i1=i1;i1+1<str1.len;i1++) {
+					int c3 = str1.ptr[i1+1];
+					//printf("i1=%ld c3=%c\n", i1, c3);
+					if (c3 == '/') break;
+				}
+				i1++;
+				i2++;
+			}
+		} else {
+			if (c1 < c2) return -1;
+			if (c1 > c2) return 1;
+			i1++;
+			i2++;
+		}
+	}
+	if (i1 < str1.len) return 1;
+	if (i2 < str2.len) return -1;
+	return 0;
+}
 void _mg_mqtt_dump(char * tag, struct mg_mqtt_message *msg) {
 	unsigned char *buf = (unsigned char *) msg->dgram.ptr;
 	ESP_LOGI(pcTaskGetName(NULL),"%s=%x %x", tag, buf[0], buf[1]);
@@ -187,7 +230,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 			if (strncmp(topic.ptr, sub->topic.ptr, topic.len) != 0) continue;
 			ESP_LOGI(pcTaskGetName(NULL), "DELETE %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
 			LIST_DELETE(struct sub, &s_subs, sub);
-  		  }
+		  }
 		  for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
 			ESP_LOGI(pcTaskGetName(NULL), "SUB[a] %p [%.*s]", sub->c->fd, (int) sub->topic.len, sub->topic.ptr);
 		  }
