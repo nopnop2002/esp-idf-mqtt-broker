@@ -323,14 +323,16 @@ void app_main()
 	ESP_LOGI(TAG, "Gateway	  : %s", ip4addr_ntoa(&ip_info.gw));
 
 	/* Start Broker using tcp transport */
-	ESP_LOGI(TAG, "MQTT broker started on %s", ip4addr_ntoa(&ip_info.ip));
+	ESP_LOGI(TAG, "MQTT broker started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
 	xTaskCreate(mqtt_server, "BROKER", 1024*4, NULL, 2, NULL);
+	vTaskDelay(10);
 
 #if CONFIG_SUBSCRIBE
 	/* Start Subscriber */
 	char cparam1[64];
 	sprintf(cparam1, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
 	xTaskCreate(mqtt_subscriber, "SUBSCRIBE", 1024*4, (void *)cparam1, 2, NULL);
+	vTaskDelay(10);
 #endif
 
 #if CONFIG_PUBLISH
@@ -338,5 +340,6 @@ void app_main()
 	char cparam2[64];
 	sprintf(cparam2, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
 	xTaskCreate(mqtt_publisher, "PUBLISH", 1024*4, (void *)cparam2, 2, NULL);
+	vTaskDelay(10);
 #endif
 }
