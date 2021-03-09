@@ -2,7 +2,6 @@
 MQTT Broker for esp-idf.   
 This project use [Mongoose networking library](https://github.com/cesanta/mongoose).   
 I forked from [here](https://github.com/bigw00d/esp32_mongoose_sample).   
-I tested  mongoose VERSION 7.2.   
 Your fork is welcome.   
 
 
