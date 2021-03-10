@@ -41,20 +41,22 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   } else if (ev == MG_EV_MQTT_OPEN) {
 	ESP_LOGI(pcTaskGetName(NULL), "MG_EV_OPEN");
 	// MQTT connect is successful
-	//struct mg_str topic = mg_str(sub_topic), data = mg_str("hello");
 	ESP_LOGI(pcTaskGetName(NULL), "CONNECTED to %s", (char *)fn_data);
 	xEventGroupSetBits(s_wifi_event_group, MQTT_CONNECTED_BIT);
 
 #if 0
 	struct mg_str topic = mg_str(sub_topic);
+	struct mg_str data = mg_str("hello");
 	mg_mqtt_sub(c, &topic);
 	ESP_LOGI(pcTaskGetName(NULL), "SUBSCRIBED to %.*s", (int) topic.len, topic.ptr);
 #endif
+
 #if 0
 	mg_mqtt_pub(c, &topic, &data);
 	LOG(LL_INFO, ("PUBSLISHED %.*s -> %.*s", (int) data.len, data.ptr,
 				  (int) topic.len, topic.ptr));
 #endif
+
   } else if (ev == MG_EV_MQTT_MSG) {
 	// When we get echo response, print it
 	struct mg_mqtt_message *mm = (struct mg_mqtt_message *) ev_data;
@@ -85,7 +87,8 @@ void mqtt_subscriber(void *pvParameters)
 	//bool done = false;		 // Event handler flips it to true when done
 	mg_mgr_init(&mgr);		   // Initialise event manager
 	memset(&opts, 0, sizeof(opts));					// Set MQTT options
-	opts.client_id = mg_str("PUB");					// Set Client ID
+	//opts.client_id = mg_str("SUB");				// Set Client ID
+	opts.client_id = mg_str(pcTaskGetName(NULL));	// Set Client ID
 	opts.qos = 1;									// Set QoS to 1
 	opts.will_topic = mg_str(will_topic);			// Set last will topic
 	opts.will_message = mg_str("goodbye");			// And last will message

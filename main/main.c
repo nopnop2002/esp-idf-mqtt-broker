@@ -15,6 +15,7 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
+#include "esp_vfs_fat.h"
 #include "mdns.h"
 
 #include "lwip/err.h"
@@ -39,6 +40,8 @@ static int s_retry_num = 0;
 const int WIFI_CONNECTED_BIT = BIT0;
 
 static const char *TAG = "MAIN";
+
+char *MOUNT_POINT = "/root";
 
 static void event_handler(void* arg, esp_event_base_t event_base, 
 								int32_t event_id, void* event_data)
@@ -287,8 +290,30 @@ void initialise_mdns(void)
 #endif
 
 void mqtt_server(void *pvParameters);
+void http_server(void *pvParameters);
 void mqtt_subscriber(void *pvParameters);
 void mqtt_publisher(void *pvParameters);
+
+wl_handle_t mountFATFS(char * partition_label, char * mount_point) {
+	ESP_LOGI(TAG, "Initializing FAT file system");
+	// To mount device we need name of device partition, define base_path
+	// and allow format partition in case if it is new one and was not formated before
+	const esp_vfs_fat_mount_config_t mount_config = {
+		.max_files = 4,
+		.format_if_mount_failed = true,
+		.allocation_unit_size = CONFIG_WL_SECTOR_SIZE
+	};
+	wl_handle_t s_wl_handle;
+	esp_err_t err = esp_vfs_fat_spiflash_mount(mount_point, partition_label, &mount_config, &s_wl_handle);
+	if (err != ESP_OK) {
+		ESP_LOGE(TAG, "Failed to mount FATFS (%s)", esp_err_to_name(err));
+		return -1;
+	}
+	ESP_LOGI(TAG, "Mount FAT filesystem on %s", mount_point);
+	ESP_LOGI(TAG, "s_wl_handle=%d",s_wl_handle);
+	return s_wl_handle;
+}
+
 
 void app_main()
 {
@@ -322,17 +347,32 @@ void app_main()
 	ESP_LOGI(TAG, "Subnet mask: %s", ip4addr_ntoa(&ip_info.netmask));
 	ESP_LOGI(TAG, "Gateway	  : %s", ip4addr_ntoa(&ip_info.gw));
 
-	/* Start Broker using tcp transport */
+	// Initializing FAT file system
+	char *partition_label = "storage";
+	wl_handle_t s_wl_handle = mountFATFS(partition_label, MOUNT_POINT);
+	if (s_wl_handle < 0) {
+		ESP_LOGE(TAG, "mountFATFS fail");
+		while(1) { vTaskDelay(1); }
+	}
+
+	/* Start MQTT Server using tcp transport */
 	ESP_LOGI(TAG, "MQTT broker started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
 	xTaskCreate(mqtt_server, "BROKER", 1024*4, NULL, 2, NULL);
-	vTaskDelay(10);
+	vTaskDelay(10);	// You need to wait until the task launch is complete.
+
+    /* Start HTTP Server using mongoose */
+    ESP_LOGI(TAG, "HTTP server started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
+    char cparam0[64];
+    sprintf(cparam0, "http://%s:8000", ip4addr_ntoa(&ip_info.ip));
+    xTaskCreate(http_server, "HTTP", 1024*4, (void *)cparam0, 2, NULL);
+	vTaskDelay(10);	// You need to wait until the task launch is complete.
 
 #if CONFIG_SUBSCRIBE
 	/* Start Subscriber */
 	char cparam1[64];
 	sprintf(cparam1, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
 	xTaskCreate(mqtt_subscriber, "SUBSCRIBE", 1024*4, (void *)cparam1, 2, NULL);
-	vTaskDelay(10);
+	vTaskDelay(10);	// You need to wait until the task launch is complete.
 #endif
 
 #if CONFIG_PUBLISH
@@ -340,6 +380,6 @@ void app_main()
 	char cparam2[64];
 	sprintf(cparam2, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
 	xTaskCreate(mqtt_publisher, "PUBLISH", 1024*4, (void *)cparam2, 2, NULL);
-	vTaskDelay(10);
+	vTaskDelay(10);	// You need to wait until the task launch is complete.
 #endif
 }
