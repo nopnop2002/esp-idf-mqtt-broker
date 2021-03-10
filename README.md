@@ -92,10 +92,10 @@ You can change MDNS hostname using menuconfig.
 
 ![config-5](https://user-images.githubusercontent.com/6020549/110200318-a56a3400-7ea0-11eb-8dfb-b07bbb03b0f1.jpg)
 
-## Start MQTT Subscriber
+## Start Built-In MQTT Subscriber
 ![config-6](https://user-images.githubusercontent.com/6020549/110200319-a56a3400-7ea0-11eb-9a42-1c3543c9b802.jpg)
 
-## Start MQTT Publisher
+## Start Built-In MQTT Publisher
 ![config-7](https://user-images.githubusercontent.com/6020549/110200403-2b867a80-7ea1-11eb-9d07-80fefa3d4b34.jpg)
 
 # Limitations
