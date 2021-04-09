@@ -164,10 +164,6 @@ First, it subscribes to the topic [hoge/#].
 When it receives the topic [hoge/1], it unsubscribes [hoge/#] and subscribes to [fuga/#].   
 When it receives the topic [fuga/1], it unsubscribes [fuga/#] and subscribes to [hoge/#] again.   
 
-# Connection list
-You can use your browser to find out which clients are connected.   
-![web-server](https://user-images.githubusercontent.com/6020549/110577804-c2577d80-81a6-11eb-932a-6cc3c2a90fe2.jpg)
-
 # Screen Shot
 The message flows like this:   
 PUBLISH->BROKER->SUBSCRIBE   

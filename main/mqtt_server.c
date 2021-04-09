@@ -185,18 +185,17 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		int willFlag = _mg_mqtt_parse_header(mm, &cid, &topic, &payload, &qos, &retain);
 		ESP_LOGI(pcTaskGetName(NULL), "cid=[%.*s] willFlag=%d", cid.len, cid.ptr, willFlag);
 
+#if 0
 		// Client connects. Add to the client-id list
 		struct client *client = calloc(1, sizeof(*client));
 		client->c = c;
 		client->cid = mg_strdup(cid);
 		LIST_ADD_HEAD(struct client, &s_clients, client);
 		ESP_LOGD(pcTaskGetName(NULL), "CLIENT ADD %p [%.*s]", c->fd, (int) client->cid.len, client->cid.ptr);
-#if 0
-		for (struct client *client = s_clients; client != NULL; client = client->next) {
-			ESP_LOGI(pcTaskGetName(NULL), "CLIENT(ALL) %p [%.*s]", client->c->fd, (int) client->cid.len, client->cid.ptr);
-		}
+		ESP_LOGI(pcTaskGetName(NULL), "CLIENT ADD %p", client);
 #endif
 
+#if 0
 		// Client connects. Add to the will list
 		if (willFlag == 1) {
 		  struct will *will = calloc(1, sizeof(*will));
@@ -209,13 +208,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		  ESP_LOGD(pcTaskGetName(NULL), "WILL ADD %p [%.*s] [%.*s] %d %d", 
 			c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
 		}
-		_mg_mqtt_status();
-#if 0
-		for (struct will *will = s_wills; will != NULL; will = will->next) {
-			ESP_LOGI(pcTaskGetName(NULL), "WILL(ALL) %p [%.*s] [%.*s] %d %d", 
-			will->c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
-		}
 #endif
+		_mg_mqtt_status();
 
 		// Client connects. Return success, do not check user/password
 		uint8_t response[] = {0, 0};
@@ -227,6 +221,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		// Client subscribe. Add to the subscription list
 		ESP_LOGI(pcTaskGetName(NULL), "MQTT_CMD_SUBSCRIBE");
 		//_mg_mqtt_dump("SUBSCRIBE", mm);
+#if 0
 		int pos = 4;  // Initial topic offset, where ID ends
 		uint8_t qos;
 		struct mg_str topic;
@@ -237,13 +232,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		  sub->qos = qos;
 		  LIST_ADD_HEAD(struct sub, &s_subs, sub);
 		  ESP_LOGI(pcTaskGetName(NULL), "SUB ADD %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
-
-#if 0
-		  for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
-			ESP_LOGI(pcTaskGetName(NULL), "SUB[a] %p [%.*s]", sub->c->fd, (int) sub->topic.len, sub->topic.ptr);
-		  }
-#endif
 		}
+#endif
 		_mg_mqtt_status();
 		break;
 	  }
@@ -266,6 +256,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 			if (strncmp(topic.ptr, sub->topic.ptr, topic.len) != 0) continue;
 			ESP_LOGI(pcTaskGetName(NULL), "DELETE SUB %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
 			LIST_DELETE(struct sub, &s_subs, sub);
+			free(sub);
 		  }
 		  for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
 			ESP_LOGI(pcTaskGetName(NULL), "SUB[a] %p [%.*s]", sub->c->fd, (int) sub->topic.len, sub->topic.ptr);
@@ -293,6 +284,12 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	}
   } else if (ev == MG_EV_CLOSE) {
 	ESP_LOGI(pcTaskGetName(NULL), "MG_EV_CLOSE %p", c->fd);
+
+	ESP_LOGD(pcTaskGetName(NULL),"total_size(MALLOC_CAP_8BIT):%d", heap_caps_get_total_size(MALLOC_CAP_8BIT));
+	ESP_LOGD(pcTaskGetName(NULL),"total_size(MALLOC_CAP_32BIT):%d", heap_caps_get_total_size(MALLOC_CAP_32BIT));
+	ESP_LOGD(pcTaskGetName(NULL),"free_size(MALLOC_CAP_8BIT):%d", heap_caps_get_free_size(MALLOC_CAP_8BIT));
+	ESP_LOGD(pcTaskGetName(NULL),"free_size(MALLOC_CAP_32BIT):%d", heap_caps_get_free_size(MALLOC_CAP_32BIT));
+
 	// Client disconnects. Remove from the client-id list
 	for (struct client *client = s_clients; client != NULL; client = client->next) {
 		ESP_LOGD(pcTaskGetName(NULL), "CLIENT(b) %p [%.*s]", client->c->fd, (int) client->cid.len, client->cid.ptr);
@@ -302,7 +299,9 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		ESP_LOGD(pcTaskGetName(NULL), "c->fd=%p client->c->fd=%p", c->fd, client->c->fd);
 		if (c != client->c) continue;
 		ESP_LOGD(pcTaskGetName(NULL), "CLIENT DEL %p [%.*s]", c->fd, (int) client->cid.len, client->cid.ptr);
+		ESP_LOGI(pcTaskGetName(NULL), "CLIENT DEL %p", client);
 		LIST_DELETE(struct client, &s_clients, client);
+		free(client);
 	}
 	for (struct client *client = s_clients; client != NULL; client = client->next) {
 		ESP_LOGD(pcTaskGetName(NULL), "CLIENT(a) %p [%.*s]", client->c->fd, (int) client->cid.len, client->cid.ptr);
@@ -318,6 +317,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		if (c != sub->c) continue;
 		ESP_LOGD(pcTaskGetName(NULL), "SUB DEL %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
 		LIST_DELETE(struct sub, &s_subs, sub);
+		free(sub);
 	}
 
 	// Judgment to send will
@@ -348,6 +348,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		ESP_LOGD(pcTaskGetName(NULL), "WILL DEL %p [%.*s] [%.*s] %d %d", 
 			c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
 		LIST_DELETE(struct will, &s_wills, will);
+		free(will);
 	}
 	for (struct will *will = s_wills; will != NULL; will = will->next) {
 		ESP_LOGD(pcTaskGetName(NULL), "WILL[a] %p [%.*s] [%.*s] %d %d", 
