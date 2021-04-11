@@ -221,7 +221,6 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		// Client subscribe. Add to the subscription list
 		ESP_LOGI(pcTaskGetName(NULL), "MQTT_CMD_SUBSCRIBE");
 		//_mg_mqtt_dump("SUBSCRIBE", mm);
-#if 0
 		int pos = 4;  // Initial topic offset, where ID ends
 		uint8_t qos;
 		struct mg_str topic;
@@ -233,7 +232,6 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		  LIST_ADD_HEAD(struct sub, &s_subs, sub);
 		  ESP_LOGI(pcTaskGetName(NULL), "SUB ADD %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
 		}
-#endif
 		_mg_mqtt_status();
 		break;
 	  }
@@ -287,8 +285,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 
 	ESP_LOGD(pcTaskGetName(NULL),"total_size(MALLOC_CAP_8BIT):%d", heap_caps_get_total_size(MALLOC_CAP_8BIT));
 	ESP_LOGD(pcTaskGetName(NULL),"total_size(MALLOC_CAP_32BIT):%d", heap_caps_get_total_size(MALLOC_CAP_32BIT));
-	ESP_LOGD(pcTaskGetName(NULL),"free_size(MALLOC_CAP_8BIT):%d", heap_caps_get_free_size(MALLOC_CAP_8BIT));
-	ESP_LOGD(pcTaskGetName(NULL),"free_size(MALLOC_CAP_32BIT):%d", heap_caps_get_free_size(MALLOC_CAP_32BIT));
+	ESP_LOGI(pcTaskGetName(NULL),"free_size(MALLOC_CAP_8BIT):%d", heap_caps_get_free_size(MALLOC_CAP_8BIT));
+	ESP_LOGI(pcTaskGetName(NULL),"free_size(MALLOC_CAP_32BIT):%d", heap_caps_get_free_size(MALLOC_CAP_32BIT));
 
 	// Client disconnects. Remove from the client-id list
 	for (struct client *client = s_clients; client != NULL; client = client->next) {
