@@ -20,6 +20,7 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "lwip/dns.h"
 
 #include "mongoose.h"
 
