@@ -83,7 +83,7 @@ ESP32 have 192.168.4.1.
 ## Using MDNS hostname
 You can use the MDNS hostname instead of the IP address.   
 - esp-idf V4.3 or earlier   
- You need to change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
+ You will need to manually change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
 - esp-idf V4,4 or later  
  If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.default, the firmware will be built with MDNS_STRICT_MODE = 1.
 
