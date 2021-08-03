@@ -54,8 +54,9 @@ idf.py flash monitor
 ```
 
 # Software requiment
-- mongoose ver7.3 or later.   
-This is because mg_mqtt_next_unsub was officially added in mongoose ver 7.3.   
+- mongoose ver7.4 or later.   
+The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L21).
+
 
 # Application Setting
 

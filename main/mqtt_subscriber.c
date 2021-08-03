@@ -18,7 +18,6 @@
 #if CONFIG_SUBSCRIBE
 
 static const char *sub_topic = "#";
-static const char *pub_topic = "esp32";
 static const char *will_topic = "WILL";
 
 static EventGroupHandle_t s_wifi_event_group;
@@ -47,7 +46,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 #if 0
 	struct mg_str topic = mg_str(sub_topic);
 	struct mg_str data = mg_str("hello");
-	mg_mqtt_sub(c, &topic);
+	mg_mqtt_sub(c, &topic, 1);
 	ESP_LOGI(pcTaskGetName(NULL), "SUBSCRIBED to %.*s", (int) topic.len, topic.ptr);
 #endif
 
@@ -114,7 +113,8 @@ void mqtt_subscriber(void *pvParameters)
 		ESP_LOGD(pcTaskGetName(NULL), "bits=%x", bits);
 		if ((bits & MQTT_CONNECTED_BIT) != 0) {
 			struct mg_str topic = mg_str(sub_topic);
-			mg_mqtt_sub(mgc, &topic);
+			//mg_mqtt_sub(mgc, &topic);
+			mg_mqtt_sub(mgc, &topic, 1);
 			ESP_LOGI(pcTaskGetName(NULL), "SUBSCRIBED to %.*s", (int) topic.len, topic.ptr);
 		}
 		mg_mgr_poll(&mgr, 0);

@@ -101,14 +101,17 @@ static void cb(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	struct mg_http_message *hm = ev_data;
 	ESP_LOGI(pcTaskGetName(NULL), "hm->uri.ptr=[%.*s] shm->uri.len=%d", hm->uri.len, hm->uri.ptr, hm->uri.len);
 	if (mg_http_match_uri(hm, "/")) {
-	  //mg_http_reply(c, 200, "", "{\"ram\": %lu}\n", xPortGetFreeHeapSize());
+		//mg_http_reply(c, 200, "", "{\"ram\": %lu}\n", xPortGetFreeHeapSize());
 
-	  char indexFilePath[64];
-	  sprintf(indexFilePath, "%s/index.htm", MOUNT_POINT);
-	  ESP_LOGI(pcTaskGetName(NULL), "indexFilePath=[%s]", indexFilePath);
-	  makeIndexFile(indexFilePath);
-	  //mg_http_serve_file(c, hm, "/root/index.htm", "text/html; charset=utf-8", NULL);
-	  mg_http_serve_file(c, hm, indexFilePath, "text/html; charset=utf-8", NULL);
+		char indexFilePath[64];
+		sprintf(indexFilePath, "%s/index.htm", MOUNT_POINT);
+		ESP_LOGI(pcTaskGetName(NULL), "indexFilePath=[%s]", indexFilePath);
+		makeIndexFile(indexFilePath);
+		//mg_http_serve_file(c, hm, "/root/index.htm", "text/html; charset=utf-8", NULL);
+		//mg_http_serve_file(c, hm, indexFilePath, "text/html; charset=utf-8", NULL);
+		struct mg_http_serve_opts opts;
+		memset(&opts, 0, sizeof(opts));
+		mg_http_serve_file(c, hm, indexFilePath, &opts);
 
 #if 0
 	} else {

@@ -53,7 +53,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 
 #if 0
 	struct mg_str topic = mg_str("esp32"), data = mg_str("hello");
-	mg_mqtt_pub(c, &topic, &data);
+	mg_mqtt_pub(c, &topic, &data, 1, false);
 	LOG(LL_INFO, ("PUBSLISHED %.*s -> %.*s", (int) data.len, data.ptr,
 				  (int) topic.len, topic.ptr));
 #endif
@@ -123,7 +123,8 @@ void mqtt_publisher(void *pvParameters)
 				char payload[64];
 				sprintf(payload, "TickCount=%d", xTaskGetTickCount());
 				struct mg_str data = mg_str(payload);
-				mg_mqtt_pub(mgc, &topic, &data);
+				//mg_mqtt_pub(mgc, &topic, &data);
+				mg_mqtt_pub(mgc, &topic, &data, 1, false);
 				ESP_LOGI(pcTaskGetName(NULL), "PUBSLISHED %.*s -> %.*s", (int) data.len, data.ptr,
 				  (int) topic.len, topic.ptr);
 			}

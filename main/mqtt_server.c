@@ -270,7 +270,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
 		  //if (mg_strcmp(mm->topic, sub->topic) != 0) continue;
 		  if (_mg_strcmp(mm->topic, sub->topic) != 0) continue;
-		  mg_mqtt_pub(sub->c, &mm->topic, &mm->data);
+		  //mg_mqtt_pub(sub->c, &mm->topic, &mm->data);
+		  mg_mqtt_pub(sub->c, &mm->topic, &mm->data, 1, false);
 		}
 		break;
 	  }
@@ -329,7 +330,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 			ESP_LOGD(pcTaskGetName(NULL), "WILL(CMP) %p [%.*s] [%.*s] %d %d", 
 				will->c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
 			if (_mg_strcmp(will->topic, sub->topic) != 0) continue;
-			mg_mqtt_pub(sub->c, &will->topic, &will->payload);
+			//mg_mqtt_pub(sub->c, &will->topic, &will->payload);
+			mg_mqtt_pub(sub->c, &will->topic, &will->payload, 1, false);
 		}
 	}
 
