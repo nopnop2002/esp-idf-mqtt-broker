@@ -251,7 +251,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 			if (c != sub->c) continue;
 			if (strncmp(topic.ptr, sub->topic.ptr, topic.len) != 0) continue;
 			ESP_LOGI(pcTaskGetName(NULL), "DELETE SUB %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
-			if (sub->topic.ptr) free((void *)sub->topic.ptr);
+			free((void *)sub->topic.ptr);
 			LIST_DELETE(struct sub, &s_subs, sub);
 			free(sub);
 		  }
@@ -298,7 +298,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		if (c != client->c) continue;
 		ESP_LOGD(pcTaskGetName(NULL), "CLIENT DEL %p [%.*s]", c->fd, (int) client->cid.len, client->cid.ptr);
 		ESP_LOGI(pcTaskGetName(NULL), "CLIENT DEL %p", client);
-		if (client->cid.ptr) free((void *)client->cid.ptr);
+		free((void *)client->cid.ptr);
 		LIST_DELETE(struct client, &s_clients, client);
 		free(client);
 	}
@@ -315,7 +315,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		ESP_LOGD(pcTaskGetName(NULL), "c->fd=%p sub->c->fd=%p", c->fd, sub->c->fd);
 		if (c != sub->c) continue;
 		ESP_LOGD(pcTaskGetName(NULL), "SUB DEL %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
-		if (sub->topic.ptr) free((void *)sub->topic.ptr);
+		free((void *)sub->topic.ptr);
 		LIST_DELETE(struct sub, &s_subs, sub);
 		free(sub);
 	}
@@ -348,7 +348,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		if (c != will->c) continue;
 		ESP_LOGD(pcTaskGetName(NULL), "WILL DEL %p [%.*s] [%.*s] %d %d", 
 			c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
-		if (will->topic.ptr) free((void *)will->topic.ptr);
+		free((void *)will->topic.ptr);
 		LIST_DELETE(struct will, &s_wills, will);
 		free(will);
 	}
