@@ -185,7 +185,19 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		int willFlag = _mg_mqtt_parse_header(mm, &cid, &topic, &payload, &qos, &retain);
 		ESP_LOGI(pcTaskGetName(NULL), "cid=[%.*s] willFlag=%d", cid.len, cid.ptr, willFlag);
 
-#if 0
+#if( 1)
+// new - find out if a connection with same client name already exists - if so shut it down (ChrisHul@github.com)
+
+		for (struct client *next, *client = s_clients; client != NULL; client = next) {
+			next = client->next;
+			if( cid.len == client->cid.len &&
+				 memcmp( cid.ptr, client->cid.ptr, cid.len) == 0)
+			{
+					client->c->is_closing = 1;
+			}
+		}
+// end of new section
+
 		// Client connects. Add to the client-id list
 		struct client *client = calloc(1, sizeof(*client));
 		client->c = c;
