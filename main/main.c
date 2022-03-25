@@ -1,10 +1,10 @@
 /* MQTT Broker for ESP32
 
-   This code is in the Public Domain (or CC0 licensed, at your option.)
+	 This code is in the Public Domain (or CC0 licensed, at your option.)
 
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+	 Unless required by applicable law or agreed to in writing, this
+	 software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+	 CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -26,8 +26,8 @@
 
 /* This project use WiFi configuration that you can set via 'make menuconfig'.
 
-   If you'd rather not, just change the below entries to strings with
-   the config you want - ie #define ESP_WIFI_SSID "mywifissid"
+	 If you'd rather not, just change the below entries to strings with
+	 the config you want - ie #define ESP_WIFI_SSID "mywifissid"
 */
 
 #if CONFIG_ST_MODE
@@ -85,15 +85,20 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 #if CONFIG_AP_MODE
 void wifi_init_softap()
 {
-#if ESP_IDF_VERSION_MAJOR >= 4 && ESP_IDF_VERSION_MINOR >= 1
+	ESP_LOGI(TAG,"ESP-IDF Ver%d.%d", ESP_IDF_VERSION_MAJOR, ESP_IDF_VERSION_MINOR);
+	ESP_LOGI(TAG,"ESP_IDF_VERSION %d", ESP_IDF_VERSION);
+
+//#if ESP_IDF_VERSION_MAJOR >= 4 && ESP_IDF_VERSION_MINOR >= 1
+#if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
 	ESP_LOGI(TAG,"ESP-IDF esp_netif");
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
 	esp_netif_create_default_wifi_ap();
 #else
-	ESP_LOGI(TAG,"ESP-IDF tcpip_adapter");
-	tcpip_adapter_init();
-	ESP_ERROR_CHECK(esp_event_loop_create_default());
+	ESP_LOGE(TAG,"esp-idf version 4.1 or higher required");
+	while(1) {
+		vTaskDelay(1);
+	}
 #endif
 
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -122,10 +127,9 @@ void wifi_init_softap()
 	ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s",
 			 CONFIG_ESP_WIFI_SSID, CONFIG_ESP_WIFI_PASSWORD);
 }
-#endif
+#endif // CONFIG_AP_MODE
 
 #if CONFIG_ST_MODE
-
 void wifi_init_sta()
 {
 	s_wifi_event_group = xEventGroupCreate();
@@ -157,8 +161,6 @@ void wifi_init_sta()
 	ESP_LOGI(TAG, "CONFIG_STATIC_GW_ADDRESS=[%s]",CONFIG_STATIC_GW_ADDRESS);
 	ESP_LOGI(TAG, "CONFIG_STATIC_NM_ADDRESS=[%s]",CONFIG_STATIC_NM_ADDRESS);
 
-//#if ESP_IDF_VERSION_MAJOR >= 4 && ESP_IDF_VERSION_MINOR >= 1
-#if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
 	/* Stop DHCP client */
 	ESP_ERROR_CHECK(esp_netif_dhcpc_stop(netif));
 	ESP_LOGI(TAG, "Stop DHCP Services");
@@ -170,13 +172,6 @@ void wifi_init_sta()
 	ip_info.netmask.addr = ipaddr_addr(CONFIG_STATIC_NM_ADDRESS);
 	ip_info.gw.addr = ipaddr_addr(CONFIG_STATIC_GW_ADDRESS);;
 	esp_netif_set_ip_info(netif, &ip_info);
-
-#else
-	ESP_LOGE(TAG,"esp-idf version 4.1 or higher required");
-	while(1) {
-		vTaskDelay(1);
-	}
-#endif // ESP_IDF_VERSION
 
 	/*
 	I referred from here.
@@ -246,7 +241,7 @@ void initialise_mdns(void)
 	ESP_ERROR_CHECK( mdns_instance_name_set("ESP32 with mDNS") );
 #endif
 }
-#endif
+#endif // CONFIG_ST_MODE
 
 void mqtt_server(void *pvParameters);
 void http_server(void *pvParameters);
