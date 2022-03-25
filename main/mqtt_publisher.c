@@ -17,7 +17,9 @@
 
 #if CONFIG_PUBLISH
 
+#if 0
 static const char *sub_topic = "#";
+#endif
 static const char *pub_topic = "esp32";
 static const char *will_topic = "WILL";
 
@@ -90,7 +92,9 @@ void mqtt_publisher(void *pvParameters)
 	memset(&opts, 0, sizeof(opts));					// Set MQTT options
 	//opts.client_id = mg_str("PUB");				// Set Client ID
 	opts.client_id = mg_str(pcTaskGetName(NULL));   // Set Client ID
-	opts.qos = 1;									// Set QoS to 1
+	//opts.qos = 1;									// Set QoS to 1
+	//for Ver7.6
+	opts.will_qos = 1;									// Set QoS to 1
 	opts.will_topic = mg_str(will_topic);			// Set last will topic
 	opts.will_message = mg_str("goodbye");			// And last will message
 
@@ -124,7 +128,9 @@ void mqtt_publisher(void *pvParameters)
 				sprintf(payload, "TickCount=%d", xTaskGetTickCount());
 				struct mg_str data = mg_str(payload);
 				//mg_mqtt_pub(mgc, &topic, &data);
-				mg_mqtt_pub(mgc, &topic, &data, 1, false);
+				//mg_mqtt_pub(mgc, &topic, &data, 1, false);
+				//for Ver7.6
+				mg_mqtt_pub(mgc, topic, data, 1, false);
 				ESP_LOGI(pcTaskGetName(NULL), "PUBSLISHED %.*s -> %.*s", (int) data.len, data.ptr,
 				  (int) topic.len, topic.ptr);
 			}

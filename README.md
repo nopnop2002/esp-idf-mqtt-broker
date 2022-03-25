@@ -23,7 +23,7 @@ idf_component_register(SRCS "mongoose.c" INCLUDE_DIRS ".")
 4. Compile this project.
 
 
-# Installation for ESP32
+# Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
 cd esp-idf-mqtt-broker
@@ -33,30 +33,18 @@ git clone https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "idf_component_register(SRCS \"mongoose.c\" INCLUDE_DIRS \".\")" > CMakeLists.txt
 cd ../..
-idf.py set-target esp32
+idf.py set-target {esp32/esp32s2/esp32c3}
 idf.py menuconfig
 idf.py flash monitor
 ```
 
-# Installation for ESP32-S2
-```
-git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
-cd esp-idf-mqtt-broker
-mkdir -p components
-cd components/
-git clone https://github.com/cesanta/mongoose.git
-cd mongoose/
-echo "idf_component_register(SRCS \"mongoose.c\" INCLUDE_DIRS \".\")" > CMakeLists.txt
-cd ../..
-idf.py set-target esp32s2
-idf.py menuconfig
-idf.py flash monitor
-```
+
 
 # Software requiment
-- mongoose ver7.4 or later.   
-The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L21).
+- mongoose ver7.6 or later.   
+The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).
 
+- esp-idf v4.1 or later.
 
 # Application Setting
 

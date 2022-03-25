@@ -116,7 +116,7 @@ int _mg_mqtt_parse_header(struct mg_mqtt_message *msg, struct mg_str *client, st
 	ESP_LOGD("_mg_mqtt_parse_header", "Will_Flag=%d *qos=%x *retain=%x", Will_Flag, *qos, *retain);
 	client->len = buf[Connect_Flags_position+3] << 8 | buf[Connect_Flags_position+4];
 	client->ptr = (char *)&buf[Connect_Flags_position+5];
-	ESP_LOGI("_mg_mqtt_parse_header", "client->len=%d", client->len);
+	ESP_LOGD("_mg_mqtt_parse_header", "client->len=%d", client->len);
 	if (Will_Flag == 0) return 0;
 
 #if 0
@@ -270,7 +270,9 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		  //if (mg_strcmp(mm->topic, sub->topic) != 0) continue;
 		  if (_mg_strcmp(mm->topic, sub->topic) != 0) continue;
 		  //mg_mqtt_pub(sub->c, &mm->topic, &mm->data);
-		  mg_mqtt_pub(sub->c, &mm->topic, &mm->data, 1, false);
+		  //mg_mqtt_pub(sub->c, &mm->topic, &mm->data, 1, false);
+		  //for Ver7.6
+		  mg_mqtt_pub(sub->c, mm->topic, mm->data, 1, false);
 		}
 		break;
 	  }
@@ -332,7 +334,9 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 				will->c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
 			if (_mg_strcmp(will->topic, sub->topic) != 0) continue;
 			//mg_mqtt_pub(sub->c, &will->topic, &will->payload);
-			mg_mqtt_pub(sub->c, &will->topic, &will->payload, 1, false);
+			//mg_mqtt_pub(sub->c, &will->topic, &will->payload, 1, false);
+			//for Ver7.6
+			mg_mqtt_pub(sub->c, will->topic, will->payload, 1, false);
 		}
 	}
 

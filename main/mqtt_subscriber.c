@@ -88,7 +88,9 @@ void mqtt_subscriber(void *pvParameters)
 	memset(&opts, 0, sizeof(opts));					// Set MQTT options
 	//opts.client_id = mg_str("SUB");				// Set Client ID
 	opts.client_id = mg_str(pcTaskGetName(NULL));	// Set Client ID
-	opts.qos = 1;									// Set QoS to 1
+	//opts.qos = 1;									// Set QoS to 1
+	//for Ver7.6
+	opts.will_qos = 1;									// Set QoS to 1
 	opts.will_topic = mg_str(will_topic);			// Set last will topic
 	opts.will_message = mg_str("goodbye");			// And last will message
 
@@ -114,7 +116,9 @@ void mqtt_subscriber(void *pvParameters)
 		if ((bits & MQTT_CONNECTED_BIT) != 0) {
 			struct mg_str topic = mg_str(sub_topic);
 			//mg_mqtt_sub(mgc, &topic);
-			mg_mqtt_sub(mgc, &topic, 1);
+			//mg_mqtt_sub(mgc, &topic, 1);
+			//for Ver7.6
+			mg_mqtt_sub(mgc, topic, 1);
 			ESP_LOGI(pcTaskGetName(NULL), "SUBSCRIBED to %.*s", (int) topic.len, topic.ptr);
 		}
 		mg_mgr_poll(&mgr, 0);
