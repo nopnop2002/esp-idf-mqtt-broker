@@ -45,6 +45,8 @@ idf.py flash monitor
 The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).
 
 - esp-idf v4.1 or later.
+'tcpip_adapter_init' has been deprecated.
+
 
 # Application Setting
 
