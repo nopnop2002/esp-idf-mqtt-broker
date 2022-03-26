@@ -142,12 +142,8 @@ void wifi_init_sta()
 	ESP_LOGI(TAG,"ESP-IDF esp_netif");
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
-#if CONFIG_STATIC_IP
 	esp_netif_t *netif = esp_netif_create_default_wifi_sta();
-#else
-	esp_netif_create_default_wifi_sta();
-#endif
-
+	assert(netif);
 #else
 	ESP_LOGE(TAG,"esp-idf version 4.1 or higher required");
 	while(1) {
