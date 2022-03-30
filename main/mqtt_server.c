@@ -13,6 +13,7 @@
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "sys/socket.h"
 
 #include "mongoose.h"
 #include "mqtt_server.h"
@@ -27,6 +28,13 @@ struct sub *s_subs = NULL;
 
 // A list of will topic & message, held in memory
 struct will *s_wills = NULL;
+
+static const int keepAlive = 1;
+static const int keepIdle = CONFIG_MQTT_KEEPALIVE_IDLE;
+static const int keepInterval = CONFIG_MQTT_KEEPALIVE_INTERVAL;
+static const int keepCount = CONFIG_MQTT_KEEPALIVE_COUNT;
+
+
 
 #if 0
 // Wildcard(#) support version
@@ -185,20 +193,14 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		int willFlag = _mg_mqtt_parse_header(mm, &cid, &topic, &payload, &qos, &retain);
 		ESP_LOGI(pcTaskGetName(NULL), "cid=[%.*s] willFlag=%d", cid.len, cid.ptr, willFlag);
 
-#if( 1)
-// new - find out if a connection with same client name already exists - if so shut it down (ChrisHul@github.com)
+	        // Set tcp socket keepalive options
+		setsockopt( (int) c->fd, SOL_SOCKET, SO_KEEPALIVE, &keepAlive, sizeof(int));
+		setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepIdle, sizeof(int));
+		setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepInterval, sizeof(int));
+		setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPCNT, &keepCount, sizeof(int));
 
-		for (struct client *next, *client = s_clients; client != NULL; client = next) {
-			next = client->next;
-			if( cid.len == client->cid.len &&
-				 memcmp( cid.ptr, client->cid.ptr, cid.len) == 0)
-			{
-					client->c->is_closing = 1;
-			}
-		}
-// end of new section
-
-		// Client connects. Add to the client-id list
+#if 1
+                // Client connects. Add to the client-id list
 		struct client *client = calloc(1, sizeof(*client));
 		client->c = c;
 		client->cid = mg_strdup(cid);
@@ -206,6 +208,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		ESP_LOGD(pcTaskGetName(NULL), "CLIENT ADD %p [%.*s]", c->fd, (int) client->cid.len, client->cid.ptr);
 		ESP_LOGI(pcTaskGetName(NULL), "CLIENT ADD %p", client);
 #endif
+
 
 		// Client connects. Add to the will list
 		if (willFlag == 1) {
@@ -276,8 +279,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	  }
 	  case MQTT_CMD_PUBLISH: {
 		// Client published message. Push to all subscribed channels
-		ESP_LOGI(pcTaskGetName(NULL), "PUB %p [%.*s] -> [%.*s]", c->fd, (int) mm->data.len,
-					  mm->data.ptr, (int) mm->topic.len, mm->topic.ptr);
+//		ESP_LOGI(pcTaskGetName(NULL), "PUB %p [%.*s] -> [%.*s]", c->fd, (int) mm->data.len,
+//					  mm->data.ptr, (int) mm->topic.len, mm->topic.ptr);
 		for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
 		  //if (mg_strcmp(mm->topic, sub->topic) != 0) continue;
 		  if (_mg_strcmp(mm->topic, sub->topic) != 0) continue;
@@ -299,6 +302,8 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	ESP_LOGD(pcTaskGetName(NULL),"total_size(MALLOC_CAP_32BIT):%d", heap_caps_get_total_size(MALLOC_CAP_32BIT));
 	ESP_LOGI(pcTaskGetName(NULL),"free_size(MALLOC_CAP_8BIT):%d", heap_caps_get_free_size(MALLOC_CAP_8BIT));
 	ESP_LOGI(pcTaskGetName(NULL),"free_size(MALLOC_CAP_32BIT):%d", heap_caps_get_free_size(MALLOC_CAP_32BIT));
+	ESP_LOGI(pcTaskGetName(NULL),"min_free_size(MALLOC_CAP_32BIT):%d", esp_get_minimum_free_heap_size());
+
 
 	// Client disconnects. Remove from the client-id list
 	for (struct client *client = s_clients; client != NULL; client = client->next) {
@@ -315,6 +320,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 		free(client);
 	}
 	for (struct client *client = s_clients; client != NULL; client = client->next) {
+		ESP_LOGI(pcTaskGetName(NULL), "CLIENT(a) %p [%.*s]", client->c->fd, (int) client->cid.len, client->cid.ptr);
 		ESP_LOGD(pcTaskGetName(NULL), "CLIENT(a) %p [%.*s]", client->c->fd, (int) client->cid.len, client->cid.ptr);
 	}
 
