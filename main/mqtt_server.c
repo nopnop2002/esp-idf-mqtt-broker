@@ -235,6 +235,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 			case MQTT_CMD_SUBSCRIBE: {
 				// Client subscribe. Add to the subscription list
 				ESP_LOGI(pcTaskGetName(NULL), "MQTT_CMD_SUBSCRIBE");
+
 				//_mg_mqtt_dump("SUBSCRIBE", mm);
 				int pos = 4;	// Initial topic offset, where ID ends
 				uint8_t qos;
@@ -244,8 +245,25 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 					sub->c = c;
 					sub->topic = mg_strdup(topic);
 					sub->qos = qos;
-					LIST_ADD_HEAD(struct sub, &s_subs, sub);
-					ESP_LOGI(pcTaskGetName(NULL), "SUB ADD %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
+					ESP_LOGI(pcTaskGetName(NULL), "SUB TEST %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
+
+					// Test if the same topic is already subscribed
+					bool alreadySubscribe = false;
+					for (struct sub *sub_test = s_subs; sub_test != NULL; sub_test = sub_test->next) {
+						ESP_LOGD(pcTaskGetName(NULL), "SUB[test] %p [%.*s]", sub_test->c->fd, (int) sub_test->topic.len, sub_test->topic.ptr);
+						if (sub_test->topic.len == sub->topic.len) {
+							if (strncmp (sub->topic.ptr, sub_test->topic.ptr, sub_test->topic.len) == 0) {
+								alreadySubscribe = true;
+								ESP_LOGW(pcTaskGetName(NULL), "Same topic already exist in s_sub. Subscribe is invalid.");
+							}
+						}
+					}
+
+					ESP_LOGD(pcTaskGetName(NULL), "alreadySubscribe=%d", alreadySubscribe);
+					if (alreadySubscribe == false) {
+						LIST_ADD_HEAD(struct sub, &s_subs, sub);
+						ESP_LOGI(pcTaskGetName(NULL), "SUB ADD %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
+					}
 				}
 				_mg_mqtt_status();
 				break;
