@@ -191,12 +191,16 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 				ESP_LOGI(pcTaskGetName(NULL), "cid=[%.*s] willFlag=%d", cid.len, cid.ptr, willFlag);
 
 				// Set tcp socket keepalive options
+				// timeout = keepidle+(keepcnt*keepintvl)
+				// timeout = 60+(1*10)=70
 				int keepAlive = 1;
 				setsockopt( (int) c->fd, SOL_SOCKET, SO_KEEPALIVE, &keepAlive, sizeof(int));
-				int keepIdle =60;
+				int keepIdle = 60; // default is 7200 Sec
 				setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepIdle, sizeof(int));
-				//setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepInterval, sizeof(int));
-				//setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPCNT, &keepCount, sizeof(int));
+				int keepInterval = 10; // default is 75 Sec
+				setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepInterval, sizeof(int));
+				int keepCount = 1; // default is 9 count
+				setsockopt( (int) c->fd, IPPROTO_TCP, TCP_KEEPCNT, &keepCount, sizeof(int));
 
 #if 0
 				// Client connects. Add to the client-id list
