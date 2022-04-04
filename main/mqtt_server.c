@@ -233,38 +233,25 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 				break;
 			}
 			case MQTT_CMD_SUBSCRIBE: {
-				// Client subscribe. Add to the subscription list
+				// Client subscribe
 				ESP_LOGI(pcTaskGetName(NULL), "MQTT_CMD_SUBSCRIBE");
-
-				//_mg_mqtt_dump("SUBSCRIBE", mm);
 				int pos = 4;	// Initial topic offset, where ID ends
-				uint8_t qos;
+				uint8_t qos, resp[256];
 				struct mg_str topic;
+				int num_topics = 0;
 				while ((pos = mg_mqtt_next_sub(mm, &topic, &qos, pos)) > 0) {
 					struct sub *sub = calloc(1, sizeof(*sub));
 					sub->c = c;
 					sub->topic = mg_strdup(topic);
 					sub->qos = qos;
-					ESP_LOGI(pcTaskGetName(NULL), "SUB TEST %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
-
-					// Test if the same topic is already subscribed
-					bool alreadySubscribe = false;
-					for (struct sub *sub_test = s_subs; sub_test != NULL; sub_test = sub_test->next) {
-						ESP_LOGD(pcTaskGetName(NULL), "SUB[test] %p [%.*s]", sub_test->c->fd, (int) sub_test->topic.len, sub_test->topic.ptr);
-						if (sub_test->topic.len == sub->topic.len) {
-							if (strncmp (sub->topic.ptr, sub_test->topic.ptr, sub_test->topic.len) == 0) {
-								alreadySubscribe = true;
-								ESP_LOGW(pcTaskGetName(NULL), "Same topic already exist in s_sub. Subscribe is invalid.");
-							}
-						}
-					}
-
-					ESP_LOGD(pcTaskGetName(NULL), "alreadySubscribe=%d", alreadySubscribe);
-					if (alreadySubscribe == false) {
-						LIST_ADD_HEAD(struct sub, &s_subs, sub);
-						ESP_LOGI(pcTaskGetName(NULL), "SUB ADD %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
-					}
+					LIST_ADD_HEAD(struct sub, &s_subs, sub);
+					ESP_LOGI(pcTaskGetName(NULL), "SUB ADD %p [%.*s]", c->fd, (int) sub->topic.len, sub->topic.ptr);
+					resp[num_topics++] = qos;
 				}
+				mg_mqtt_send_header(c, MQTT_CMD_SUBACK, 0, num_topics + 2);
+				uint16_t id = mg_htons(mm->id);
+				mg_send(c, &id, 2);
+				mg_send(c, resp, num_topics);
 				_mg_mqtt_status();
 				break;
 			}
@@ -302,7 +289,6 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 				ESP_LOGI(pcTaskGetName(NULL), "PUB %p [%.*s] -> [%.*s]", c->fd, (int) mm->data.len,
 								mm->data.ptr, (int) mm->topic.len, mm->topic.ptr);
 				for (struct sub *sub = s_subs; sub != NULL; sub = sub->next) {
-					//if (mg_strcmp(mm->topic, sub->topic) != 0) continue;
 					if (_mg_strcmp(mm->topic, sub->topic) != 0) continue;
 					//mg_mqtt_pub(sub->c, &mm->topic, &mm->data);
 					//mg_mqtt_pub(sub->c, &mm->topic, &mm->data, 1, false);
