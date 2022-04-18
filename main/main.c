@@ -10,7 +10,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
-#include "esp_system.h"
+#include "esp_mac.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
@@ -18,8 +18,8 @@
 #include "esp_vfs_fat.h"
 #include "mdns.h"
 
-#include "lwip/err.h"
-#include "lwip/sys.h"
+//#include "lwip/err.h"
+//#include "lwip/sys.h"
 #include "lwip/dns.h"
 
 #include "mongoose.h"
@@ -278,8 +278,10 @@ void app_main()
 #if CONFIG_AP_MODE
 	ESP_LOGI(TAG, "ESP_WIFI_MODE_AP");
 	wifi_init_softap();
-	tcpip_adapter_ip_info_t ip_info;
-	ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &ip_info));
+	//tcpip_adapter_ip_info_t ip_info;
+	//ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_AP, &ip_info));
+	esp_netif_ip_info_t ip_info;
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_AP_DEF"), &ip_info));
 	ESP_LOGI(TAG, "ESP32 is AP MODE");
 #endif
 
@@ -287,15 +289,20 @@ void app_main()
 	ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
 	wifi_init_sta();
 	initialise_mdns();
-	tcpip_adapter_ip_info_t ip_info;
-	ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+	//tcpip_adapter_ip_info_t ip_info;
+	//ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(TCPIP_ADAPTER_IF_STA, &ip_info));
+	esp_netif_ip_info_t ip_info;
+	ESP_ERROR_CHECK(esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_STA_DEF"), &ip_info));
 	ESP_LOGI(TAG, "ESP32 is STA MODE");
 #endif
 
 	/* Print the local IP address */
-	ESP_LOGI(TAG, "IP Address : %s", ip4addr_ntoa(&ip_info.ip));
-	ESP_LOGI(TAG, "Subnet mask: %s", ip4addr_ntoa(&ip_info.netmask));
-	ESP_LOGI(TAG, "Gateway    : %s", ip4addr_ntoa(&ip_info.gw));
+	//ESP_LOGI(TAG, "IP Address : %s", ip4addr_ntoa(&ip_info.ip));
+	//ESP_LOGI(TAG, "Subnet mask: %s", ip4addr_ntoa(&ip_info.netmask));
+	//ESP_LOGI(TAG, "Gateway		: %s", ip4addr_ntoa(&ip_info.gw));
+	ESP_LOGI(TAG, "IP Address : " IPSTR, IP2STR(&ip_info.ip));
+	ESP_LOGI(TAG, "Subnet Mask: " IPSTR, IP2STR(&ip_info.netmask));
+	ESP_LOGI(TAG, "Gateway    : " IPSTR, IP2STR(&ip_info.gw));
 
 	// Initializing FAT file system
 	char *partition_label = "storage";
@@ -306,7 +313,8 @@ void app_main()
 	}
 
 	/* Start MQTT Server using tcp transport */
-	ESP_LOGI(TAG, "MQTT broker started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
+	//ESP_LOGI(TAG, "MQTT broker started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
+	ESP_LOGI(TAG, "MQTT broker started on " IPSTR " using Mongoose v%s", IP2STR(&ip_info.ip), MG_VERSION);
 	xTaskCreate(mqtt_server, "BROKER", 1024*4, NULL, 2, NULL);
 	vTaskDelay(10);	// You need to wait until the task launch is complete.
 
@@ -314,7 +322,8 @@ void app_main()
 	/* Start HTTP Server using mongoose */
 	ESP_LOGI(TAG, "HTTP server started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
 	char cparam0[64];
-	sprintf(cparam0, "http://%s:8000", ip4addr_ntoa(&ip_info.ip));
+	//sprintf(cparam0, "http://%s:8000", ip4addr_ntoa(&ip_info.ip));
+	sprintf(cparam0, "http://" IPSTR ":8000", IP2STR(&ip_info.ip));
 	xTaskCreate(http_server, "HTTP", 1024*4, (void *)cparam0, 2, NULL);
 	vTaskDelay(10);	// You need to wait until the task launch is complete.
 #endif
@@ -322,7 +331,8 @@ void app_main()
 #if CONFIG_SUBSCRIBE
 	/* Start Subscriber */
 	char cparam1[64];
-	sprintf(cparam1, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
+	//sprintf(cparam1, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
+	sprintf(cparam1, "mqtt://" IPSTR ":1883", IP2STR(&ip_info.ip));
 	xTaskCreate(mqtt_subscriber, "SUBSCRIBE", 1024*4, (void *)cparam1, 2, NULL);
 	vTaskDelay(10);	// You need to wait until the task launch is complete.
 #endif
@@ -330,7 +340,8 @@ void app_main()
 #if CONFIG_PUBLISH
 	/* Start Publisher */
 	char cparam2[64];
-	sprintf(cparam2, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
+	//sprintf(cparam2, "mqtt://%s:1883", ip4addr_ntoa(&ip_info.ip));
+	sprintf(cparam2, "mqtt://" IPSTR ":1883", IP2STR(&ip_info.ip));
 	xTaskCreate(mqtt_publisher, "PUBLISH", 1024*4, (void *)cparam2, 2, NULL);
 	vTaskDelay(10);	// You need to wait until the task launch is complete.
 #endif
