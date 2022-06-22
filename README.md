@@ -33,7 +33,7 @@ git clone https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "idf_component_register(SRCS \"mongoose.c\" PRIV_REQUIRES esp_timer INCLUDE_DIRS \".\") > CMakeLists.txt
 cd ../..
-idf.py set-target {esp32/esp32s2/esp32c3}
+idf.py set-target {esp32/esp32s2/esp32s3/esp32c3}
 idf.py menuconfig
 idf.py flash monitor
 ```
