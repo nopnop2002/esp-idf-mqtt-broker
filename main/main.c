@@ -18,11 +18,14 @@
 #include "esp_vfs_fat.h"
 #include "mdns.h"
 
-//#include "lwip/err.h"
-//#include "lwip/sys.h"
 #include "lwip/dns.h"
 
 #include "mongoose.h"
+
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+#define esp_vfs_fat_spiflash_mount esp_vfs_fat_spiflash_mount_rw_wl
+#define esp_vfs_fat_spiflash_unmount esp_vfs_fat_spiflash_unmount_rw_wl
+#endif
 
 /* This project use WiFi configuration that you can set via 'make menuconfig'.
 
