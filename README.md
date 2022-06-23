@@ -17,7 +17,7 @@ git clone https://github.com/cesanta/mongoose.git
 
 3. In the new Mongoose directory, create a CMakeLists.txt file containing:
 ```
-idf_component_register(SRCS "mongoose.c" INCLUDE_DIRS ".")
+idf_component_register(SRCS "mongoose.c" PRIV_REQUIRES esp_timer INCLUDE_DIRS ".")
 ```
 
 4. Compile this project.
