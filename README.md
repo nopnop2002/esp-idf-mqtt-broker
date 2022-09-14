@@ -27,9 +27,9 @@ idf_component_register(SRCS "mongoose.c" PRIV_REQUIRES esp_timer INCLUDE_DIRS ".
 ```
 git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
 cd esp-idf-mqtt-broker
-mkdir -p components
+mkdir components
 cd components/
-git clone https://github.com/cesanta/mongoose.git
+git clone -b 7.7 https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "idf_component_register(SRCS \"mongoose.c\" PRIV_REQUIRES esp_timer INCLUDE_DIRS \".\")" > CMakeLists.txt
 cd ../..
@@ -41,8 +41,9 @@ idf.py flash monitor
 
 
 # Software requiment
-- mongoose ver7.6 or later.   
-The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).
+- mongoose version 7.7.   
+The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).   
+It doesn't work with the version 7.8.   
 
 - esp-idf ver4.4 or later.   
 This is because this version supports ESP32-C3.
