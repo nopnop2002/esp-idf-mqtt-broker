@@ -93,7 +93,7 @@ You can connect using the mDNS hostname instead of the IP address.
 
 ![mdns-2](https://user-images.githubusercontent.com/6020549/93420837-cdfa7380-f8ea-11ea-952c-64113c929df7.jpg)
 
-You can change MDNS hostname using menuconfig.   
+You can change mDNS hostname using menuconfig.   
 
 ![config-5](https://user-images.githubusercontent.com/6020549/110200318-a56a3400-7ea0-11eb-8dfb-b07bbb03b0f1.jpg)
 
