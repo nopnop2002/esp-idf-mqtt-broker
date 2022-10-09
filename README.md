@@ -87,13 +87,7 @@ You can connect using the mDNS hostname instead of the IP address.
  mDNS component has been updated.   
  Long-term operation is possible without setting MDNS_STRICT_MODE.   
  The following lines in sdkconfig.defailt should be commented out.   
- ```
- CONFIG_MDNS_STRICT_MODE=y
- ```
-
-
- If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.default, the firmware will be built with MDNS_STRICT_MODE.   
- But These versions can't run for a long time with MDNS_STRICT_MODE.   
+ ```CONFIG_MDNS_STRICT_MODE=y```
 
 ![mdns-1](https://user-images.githubusercontent.com/6020549/93420660-60e6de00-f8ea-11ea-9783-3c295130a840.jpg)
 
