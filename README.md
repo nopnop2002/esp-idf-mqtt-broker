@@ -86,7 +86,7 @@ You can connect using the mDNS hostname instead of the IP address.
 - esp-idf V5.0 or later   
  mDNS component has been updated.   
  Long-term operation is possible without setting MDNS_STRICT_MODE.   
- The following lines in sdkconfig.defaults should be commented out before menuconfig.   
+ The following lines in sdkconfig.defaults should be removed before menuconfig.   
  ```CONFIG_MDNS_STRICT_MODE=y```
 
 ![mdns-1](https://user-images.githubusercontent.com/6020549/93420660-60e6de00-f8ea-11ea-9783-3c295130a840.jpg)
