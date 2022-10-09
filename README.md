@@ -77,16 +77,16 @@ You can connect using the mDNS hostname instead of the IP address.
 - esp-idf V4.3 or earlier   
  You will need to manually change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
 - esp-idf V4.4  
- If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.default, the firmware will be built with MDNS_STRICT_MODE.   
+ If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.defaults, the firmware will be built with MDNS_STRICT_MODE.   
  __If MDNS_STRICT_MODE is not specified in ESP-IDF V4.4, mDNS name resolution will not be possible after long-term operation.__   
 - esp-idf V4.4.1   
  mDNS component has been updated.   
- If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.default, the firmware will be built with MDNS_STRICT_MODE.   
- __If MDNS_STRICT_MODE is specified in ESP-IDF V4.4.1, mDNS name resolution will not be possible after long-term operation.__   
+ If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.defaults, the firmware will be built with MDNS_STRICT_MODE.   
+ __Even if MDNS_STRICT_MODE is specified in ESP-IDF V4.4.1, mDNS name resolution will not be possible after long-term operation.__   
 - esp-idf V5.0 or later   
  mDNS component has been updated.   
  Long-term operation is possible without setting MDNS_STRICT_MODE.   
- The following lines in sdkconfig.defailt should be commented out.   
+ The following lines in sdkconfig.defaults should be commented out before menuconfig.   
  ```CONFIG_MDNS_STRICT_MODE=y```
 
 ![mdns-1](https://user-images.githubusercontent.com/6020549/93420660-60e6de00-f8ea-11ea-9783-3c295130a840.jpg)
