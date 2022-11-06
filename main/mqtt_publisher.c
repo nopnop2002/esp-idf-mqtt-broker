@@ -6,6 +6,9 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
+
+#include <stdio.h>
+#include <inttypes.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -119,13 +122,13 @@ void mqtt_publisher(void *pvParameters)
 			pdFALSE,
 			pdTRUE,
 			0);
-		ESP_LOGD(pcTaskGetName(NULL), "bits=%x", bits);
+		ESP_LOGD(pcTaskGetName(NULL), "bits=%"PRIu32, bits);
 		if ((bits & MQTT_CONNECTED_BIT) != 0) {
 			counter++;
 			if (counter > 100) {
 				counter=0;
 				char payload[64];
-				sprintf(payload, "TickCount=%d", xTaskGetTickCount());
+				sprintf(payload, "TickCount=%"PRIu32, xTaskGetTickCount());
 				struct mg_str data = mg_str(payload);
 				//mg_mqtt_pub(mgc, &topic, &data);
 				//mg_mqtt_pub(mgc, &topic, &data, 1, false);

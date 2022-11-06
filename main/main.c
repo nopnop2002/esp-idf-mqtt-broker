@@ -6,6 +6,9 @@
 	 software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 	 CONDITIONS OF ANY KIND, either express or implied.
 */
+
+#include <stdio.h>
+#include <inttypes.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -50,8 +53,8 @@ char *MOUNT_POINT = "/root";
 static void event_handler(void* arg, esp_event_base_t event_base, 
 								int32_t event_id, void* event_data)
 {
-	if (event_base == WIFI_EVENT) ESP_LOGI(TAG, "WIFI_EVENT event_id=%d", event_id);
-	if (event_base == IP_EVENT) ESP_LOGI(TAG, "IP_EVENT event_id=%d", event_id);
+	if (event_base == WIFI_EVENT) ESP_LOGI(TAG, "WIFI_EVENT event_id=%"PRIi32, event_id);
+	if (event_base == IP_EVENT) ESP_LOGI(TAG, "IP_EVENT event_id=%"PRIi32, event_id);
 
 #if CONFIG_AP_MODE
 	if (event_id == WIFI_EVENT_AP_STACONNECTED) {
@@ -263,7 +266,7 @@ wl_handle_t mountFATFS(char * partition_label, char * mount_point) {
 		return -1;
 	}
 	ESP_LOGI(TAG, "Mount FAT filesystem on %s", mount_point);
-	ESP_LOGI(TAG, "s_wl_handle=%d",s_wl_handle);
+	ESP_LOGI(TAG, "s_wl_handle=%"PRIi32, s_wl_handle);
 	return s_wl_handle;
 }
 
