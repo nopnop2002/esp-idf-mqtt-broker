@@ -22,6 +22,14 @@ idf_component_register(SRCS "mongoose.c" PRIV_REQUIRES esp_timer INCLUDE_DIRS ".
 
 4. Compile this project.
 
+# Software requiment
+- mongoose version 7.7.   
+The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).   
+It doesn't work with the version 7.8.   
+
+- esp-idf v4.4/v5.0.   
+This is because this version supports ESP32-C3.
+
 
 # Installation
 ```
@@ -37,16 +45,6 @@ idf.py set-target {esp32/esp32s2/esp32s3/esp32c3}
 idf.py menuconfig
 idf.py flash monitor
 ```
-
-
-
-# Software requiment
-- mongoose version 7.7.   
-The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).   
-It doesn't work with the version 7.8.   
-
-- esp-idf ver4.4 or later.   
-This is because this version supports ESP32-C3.
 
 
 # Application Setting
