@@ -115,11 +115,11 @@ PUBCOMP
 $ sudo apt install mosquitto-clients moreutils
 $ chmod 777 ./mqtt_sub.sh
 $ ./mqtt_sub.sh
-21/03/06 18:14:19 esp32 TickCount=110964
-21/03/06 18:14:20 esp32 TickCount=111065
-21/03/06 18:14:21 esp32 TickCount=111166
-21/03/06 18:14:22 esp32 TickCount=111267
-21/03/06 18:14:23 esp32 TickCount=111368
+23/02/19 12:35:16 topic 2023/02/19-12:35:16
+23/02/19 12:35:17 topic 2023/02/19-12:35:17
+23/02/19 12:35:18 topic 2023/02/19-12:35:18
+23/02/19 12:35:19 topic 2023/02/19-12:35:19
+23/02/19 12:35:21 topic 2023/02/19-12:35:20
 ```
 
 # Publish using mosquitto-clients
