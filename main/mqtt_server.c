@@ -28,25 +28,32 @@ struct sub *s_subs = NULL;
 // A list of will topic & message, held in memory
 struct will *s_wills = NULL;
 
+// Since version 7.8, mg_mqtt_next_sub() and mg_mqtt_next_unsub() are no longer supported.
+static size_t mg_mqtt_next_topic(struct mg_mqtt_message *msg,
+                                 struct mg_str *topic, uint8_t *qos,
+                                 size_t pos) {
+  unsigned char *buf = (unsigned char *) msg->dgram.ptr + pos;
+  size_t new_pos;
+  if (pos >= msg->dgram.len) return 0;
 
-#if 0
-// Wildcard(#) support version
-int _mg_strcmp(const struct mg_str str1, const struct mg_str str2) {
-	size_t i = 0;
-	while (i < str1.len && i < str2.len) {
-		int c1 = str1.ptr[i];
-		int c2 = str2.ptr[i];
-		//printf("c2=%x\n",c2);
-		if (c2 == '#') return 0;
-		if (c1 < c2) return -1;
-		if (c1 > c2) return 1;
-		i++;
-	}
-	if (i < str1.len) return 1;
-	if (i < str2.len) return -1;
-	return 0;
+  topic->len = (size_t) (((unsigned) buf[0]) << 8 | buf[1]);
+  topic->ptr = (char *) buf + 2;
+  new_pos = pos + 2 + topic->len + (qos == NULL ? 0 : 1);
+  if ((size_t) new_pos > msg->dgram.len) return 0;
+  if (qos != NULL) *qos = buf[2 + topic->len];
+  return new_pos;
 }
-#endif
+
+size_t mg_mqtt_next_sub(struct mg_mqtt_message *msg, struct mg_str *topic,
+                        uint8_t *qos, size_t pos) {
+  uint8_t tmp;
+  return mg_mqtt_next_topic(msg, topic, qos == NULL ? &tmp : qos, pos);
+}
+
+size_t mg_mqtt_next_unsub(struct mg_mqtt_message *msg, struct mg_str *topic,
+                          size_t pos) {
+  return mg_mqtt_next_topic(msg, topic, NULL, pos);
+}
 
 // Wildcard(#/+) support version
 int _mg_strcmp(const struct mg_str str1, const struct mg_str str2) {
@@ -397,8 +404,8 @@ void mqtt_server(void *pvParameters)
 	/* Starting Broker */
 	ESP_LOGI(pcTaskGetName(NULL), "Start");
 	struct mg_mgr mgr;
-	mg_log_set("1"); // Set to log level to LL_ERROR
-	//mg_log_set("3"); // Set to log level to LL_DEBUG
+	mg_log_set(1); // Set to log level to LL_ERROR
+	//mg_log_set(3); // Set to log level to LL_DEBUG
 	mg_mgr_init(&mgr);
 	mg_mqtt_listen(&mgr, s_listen_on, fn, NULL); // Create MQTT listener
 	//ESP_LOGI(pcTaskGetName(NULL), "Starting Mongoose v%s MQTT Server", MG_VERSION);

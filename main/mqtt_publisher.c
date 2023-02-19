@@ -122,7 +122,7 @@ void mqtt_publisher(void *pvParameters)
 			pdFALSE,
 			pdTRUE,
 			0);
-		ESP_LOGD(pcTaskGetName(NULL), "bits=%"PRIu32, bits);
+		ESP_LOGD(pcTaskGetName(NULL), "bits=0x%"PRIx32, bits);
 		if ((bits & MQTT_CONNECTED_BIT) != 0) {
 			counter++;
 			if (counter > 100) {

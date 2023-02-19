@@ -115,7 +115,7 @@ void mqtt_subscriber(void *pvParameters)
 			pdTRUE,
 			pdTRUE,
 			0);
-		ESP_LOGD(pcTaskGetName(NULL), "bits=%"PRIx32, bits);
+		ESP_LOGD(pcTaskGetName(NULL), "bits=0x%"PRIx32, bits);
 		if ((bits & MQTT_CONNECTED_BIT) != 0) {
 			struct mg_str topic = mg_str(sub_topic);
 			//mg_mqtt_sub(mgc, &topic);

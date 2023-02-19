@@ -10,9 +10,9 @@ Your fork is welcome.
 
 1. In this project directory, create a components directory.
 
-2. In the components directory, clone Mongoose version 7.7:
+2. In the components directory, clone Mongoose version 7.9:
 ```
-git clone -b 7.7 https://github.com/cesanta/mongoose.git
+git clone https://github.com/cesanta/mongoose.git
 ```
 
 3. In the new Mongoose directory, create a CMakeLists.txt file containing:
@@ -23,9 +23,8 @@ idf_component_register(SRCS "mongoose.c" PRIV_REQUIRES esp_timer INCLUDE_DIRS ".
 4. Compile this project.
 
 # Software requiment
-- mongoose version 7.7.   
+- mongoose version 7.9.   
 The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).   
-It doesn't work with the version 7.8.   
 
 - ESP-IDF V4.4/V5.0.   
 ESP-IDF V5 is required when using ESP32-C2.   
@@ -37,7 +36,7 @@ git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
 cd esp-idf-mqtt-broker
 mkdir components
 cd components/
-git clone -b 7.7 https://github.com/cesanta/mongoose.git
+git clone https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "idf_component_register(SRCS \"mongoose.c\" PRIV_REQUIRES esp_timer INCLUDE_DIRS \".\")" > CMakeLists.txt
 cd ../..

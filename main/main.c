@@ -324,16 +324,6 @@ void app_main()
 	xTaskCreate(mqtt_server, "BROKER", 1024*4, NULL, 2, NULL);
 	vTaskDelay(10);	// You need to wait until the task launch is complete.
 
-#if 0
-	/* Start HTTP Server using mongoose */
-	ESP_LOGI(TAG, "HTTP server started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
-	char cparam0[64];
-	//sprintf(cparam0, "http://%s:8000", ip4addr_ntoa(&ip_info.ip));
-	sprintf(cparam0, "http://" IPSTR ":8000", IP2STR(&ip_info.ip));
-	xTaskCreate(http_server, "HTTP", 1024*4, (void *)cparam0, 2, NULL);
-	vTaskDelay(10);	// You need to wait until the task launch is complete.
-#endif
-
 #if CONFIG_SUBSCRIBE
 	/* Start Subscriber */
 	char cparam1[64];
