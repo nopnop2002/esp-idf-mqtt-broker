@@ -110,6 +110,13 @@ PUBREC
 PUBREL   
 PUBCOMP   
 
+# Publish using mosquitto-clients
+```
+$ sudo apt install mosquitto-clients moreutils
+$ chmod 777 ./mqtt_sub.sh
+$ ./mqtt_pub.sh
+```
+
 # Subscribe using mosquitto-clients
 ```
 $ sudo apt install mosquitto-clients moreutils
@@ -120,13 +127,6 @@ $ ./mqtt_sub.sh
 23/02/19 12:35:18 topic 2023/02/19-12:35:18
 23/02/19 12:35:19 topic 2023/02/19-12:35:19
 23/02/19 12:35:21 topic 2023/02/19-12:35:20
-```
-
-# Publish using mosquitto-clients
-```
-$ sudo apt install mosquitto-clients moreutils
-$ chmod 777 ./mqtt_sub.sh
-$ ./mqtt_pub.sh
 ```
 
 # Notify topic of will using mosquitto-clients
