@@ -12,7 +12,7 @@ Your fork is welcome.
 
 2. In the components directory, clone Mongoose version 7.9:
 ```
-git clone https://github.com/cesanta/mongoose.git
+git clone -b 7.9 https://github.com/cesanta/mongoose.git
 ```
 
 3. In the new Mongoose directory, create a CMakeLists.txt file containing:
@@ -36,7 +36,7 @@ git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
 cd esp-idf-mqtt-broker
 mkdir components
 cd components/
-git clone https://github.com/cesanta/mongoose.git
+git clone -b 7.9 https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "idf_component_register(SRCS \"mongoose.c\" PRIV_REQUIRES esp_timer INCLUDE_DIRS \".\")" > CMakeLists.txt
 cd ../..
