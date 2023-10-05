@@ -26,8 +26,9 @@ idf_component_register(SRCS "mongoose.c" PRIV_REQUIRES esp_timer INCLUDE_DIRS ".
 - mongoose version 7.9.   
 The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).   
 
-- ESP-IDF V4.4/V5.0.   
+- ESP-IDF V4.4/V5.x.   
 ESP-IDF V5.0 is required when using ESP32-C2.   
+ESP-IDF V5.1 is required when using ESP32-C6.   
 
 
 # Installation
@@ -40,7 +41,7 @@ git clone -b 7.9 https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "idf_component_register(SRCS \"mongoose.c\" PRIV_REQUIRES esp_timer INCLUDE_DIRS \".\")" > CMakeLists.txt
 cd ../..
-idf.py set-target {esp32/esp32s2/esp32s3/esp32c2/esp32c3}
+idf.py set-target {esp32/esp32s2/esp32s3/esp32c2/esp32c3/esp32c6}
 idf.py menuconfig
 idf.py flash monitor
 ```
