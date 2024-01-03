@@ -1,0 +1,7 @@
+build/
+tmp/
+bak/
+sdkconfig
+sdkconfig.old
+managed_components/
+components/mongoose/
