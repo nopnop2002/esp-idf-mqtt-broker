@@ -33,7 +33,7 @@ ESP-IDF V5.1 is required when using ESP32-C6.
 
 # Installation
 ```
-git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
+git clone https://github.com/akhud78/esp-idf-mqtt-broker
 cd esp-idf-mqtt-broker
 git submodule update --init --recursive
 cd components/
@@ -41,7 +41,14 @@ git clone -b 7.9 https://github.com/cesanta/mongoose.git
 cd mongoose/
 echo "idf_component_register(SRCS \"mongoose.c\" PRIV_REQUIRES esp_timer INCLUDE_DIRS \".\")" > CMakeLists.txt
 cd ../..
-idf.py set-target {esp32/esp32s2/esp32s3/esp32c2/esp32c3/esp32c6}
+idf.py set-target {esp32|esp32s2|esp32s3|esp32c2|esp32c3|esp32c6}
+idf.py menuconfig
+idf.py flash monitor
+```
+## Tests
+```
+cd test
+idf.py set-target {esp32|esp32s3}
 idf.py menuconfig
 idf.py flash monitor
 ```
