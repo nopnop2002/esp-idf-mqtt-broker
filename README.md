@@ -35,7 +35,7 @@ ESP-IDF V5.1 is required when using ESP32-C6.
 ```
 git clone https://github.com/nopnop2002/esp-idf-mqtt-broker
 cd esp-idf-mqtt-broker
-mkdir components
+git submodule update --init --recursive
 cd components/
 git clone -b 7.9 https://github.com/cesanta/mongoose.git
 cd mongoose/
