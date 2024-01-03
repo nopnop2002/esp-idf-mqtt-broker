@@ -121,7 +121,7 @@ PUBCOMP
 # Publish using mosquitto-clients
 ```
 $ sudo apt install mosquitto-clients moreutils
-$ chmod 777 ./mqtt_sub.sh
+$ chmod 777 ./mqtt_pub.sh
 $ ./mqtt_pub.sh
 ```
 
