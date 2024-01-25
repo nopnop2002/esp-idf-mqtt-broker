@@ -174,6 +174,14 @@ int _mg_mqtt_status() {
 	return 0;
 }
 
+int isasciis(char * buffer, int length) {
+	for (int i=0;i<length;i++) {
+		if (!isascii(buffer[i])) return 0;
+	}
+	return 1;
+
+}
+
 // Event handler function
 static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 	if (ev == MG_EV_MQTT_CMD) {
@@ -293,8 +301,10 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 			}
 			case MQTT_CMD_PUBLISH: {
 				// Client published message. Push to all subscribed channels
-				ESP_LOGI(pcTaskGetName(NULL), "mm->data.ptr[0]=0x%x", mm->data.ptr[0]);
-				if (isascii(mm->data.ptr[0])) {
+				//ESP_LOGI(pcTaskGetName(NULL), "mm->data.ptr[0]=0x%x", mm->data.ptr[0]);
+				//if (isascii(mm->data.ptr[0])) {
+				// Make sure all characters are ASCII codes
+				if (isasciis((char *)mm->data.ptr, mm->topic.len)) {
 					ESP_LOGI(pcTaskGetName(NULL), "PUB %p [%.*s] -> [%.*s]", c->fd, (int) mm->data.len,
 						mm->data.ptr, (int) mm->topic.len, mm->topic.ptr);
 				} else {
