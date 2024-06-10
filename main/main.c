@@ -254,27 +254,6 @@ void http_server(void *pvParameters);
 void mqtt_subscriber(void *pvParameters);
 void mqtt_publisher(void *pvParameters);
 
-wl_handle_t mountFATFS(char * partition_label, char * mount_point) {
-	ESP_LOGI(TAG, "Initializing FAT file system");
-	// To mount device we need name of device partition, define base_path
-	// and allow format partition in case if it is new one and was not formated before
-	const esp_vfs_fat_mount_config_t mount_config = {
-		.max_files = 4,
-		.format_if_mount_failed = true,
-		.allocation_unit_size = CONFIG_WL_SECTOR_SIZE
-	};
-	wl_handle_t s_wl_handle;
-	esp_err_t err = esp_vfs_fat_spiflash_mount(mount_point, partition_label, &mount_config, &s_wl_handle);
-	if (err != ESP_OK) {
-		ESP_LOGE(TAG, "Failed to mount FATFS (%s)", esp_err_to_name(err));
-		return -1;
-	}
-	ESP_LOGI(TAG, "Mount FAT filesystem on %s", mount_point);
-	ESP_LOGI(TAG, "s_wl_handle=%"PRIi32, s_wl_handle);
-	return s_wl_handle;
-}
-
-
 void app_main()
 {
 	//Initialize NVS
@@ -309,14 +288,6 @@ void app_main()
 	ESP_LOGI(TAG, "IP Address : " IPSTR, IP2STR(&ip_info.ip));
 	ESP_LOGI(TAG, "Subnet Mask: " IPSTR, IP2STR(&ip_info.netmask));
 	ESP_LOGI(TAG, "Gateway    : " IPSTR, IP2STR(&ip_info.gw));
-
-	// Initializing FAT file system
-	char *partition_label = "storage";
-	wl_handle_t s_wl_handle = mountFATFS(partition_label, MOUNT_POINT);
-	if (s_wl_handle < 0) {
-		ESP_LOGE(TAG, "mountFATFS fail");
-		while(1) { vTaskDelay(1); }
-	}
 
 	/* Start MQTT Server using tcp transport */
 	//ESP_LOGI(TAG, "MQTT broker started on %s using Mongoose v%s", ip4addr_ntoa(&ip_info.ip), MG_VERSION);
