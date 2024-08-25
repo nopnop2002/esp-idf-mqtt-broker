@@ -102,7 +102,7 @@ You can change mDNS hostname using menuconfig.
 ![config-7](https://user-images.githubusercontent.com/6020549/110200403-2b867a80-7ea1-11eb-9d07-80fefa3d4b34.jpg)
 
 ## Enable Authentication
-When authentication is enabled, a username and password are required to log in to the server.   
+When authentication is enabled, a username and password are required to connect to the server.   
 ![config-8](https://github.com/user-attachments/assets/f4554a18-31d6-4e95-9839-8d292130383f)
 
 
