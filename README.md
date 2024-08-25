@@ -57,7 +57,7 @@ idf.py flash monitor
 SSID:SSID of your Wifi router   
 ESP32 get IP using DHCP.    
 
-## Station Mode of Static Address
+Station Mode of Static Address
 ![config-3](https://user-images.githubusercontent.com/6020549/110200316-a4390700-7ea0-11eb-9266-473ad7fb193e.jpg)
 
 SSID:SSID of your Wifi router   
@@ -100,6 +100,11 @@ You can change mDNS hostname using menuconfig.
 
 ## Start Built-In MQTT Publisher
 ![config-7](https://user-images.githubusercontent.com/6020549/110200403-2b867a80-7ea1-11eb-9d07-80fefa3d4b34.jpg)
+
+## Enable Authentication
+When authentication is enabled, a username and password are required to log in to the server.   
+![config-8](https://github.com/user-attachments/assets/f4554a18-31d6-4e95-9839-8d292130383f)
+
 
 # Limitations
 - will topics   
