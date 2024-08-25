@@ -51,13 +51,13 @@ idf.py flash monitor
 
 ![config-1](https://user-images.githubusercontent.com/6020549/110200312-a307da00-7ea0-11eb-85fa-c76f932b8023.jpg)
 
-## Station Mode
+## Station mode with dynamic address
 ![config-2](https://user-images.githubusercontent.com/6020549/110200315-a4390700-7ea0-11eb-8021-f8355818fbb2.jpg)
 
 SSID:SSID of your Wifi router   
 ESP32 get IP using DHCP.    
 
-Station Mode of Static Address
+## Station mode with static address
 ![config-3](https://user-images.githubusercontent.com/6020549/110200316-a4390700-7ea0-11eb-9266-473ad7fb193e.jpg)
 
 SSID:SSID of your Wifi router   
