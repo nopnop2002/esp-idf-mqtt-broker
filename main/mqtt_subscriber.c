@@ -93,9 +93,14 @@ void mqtt_subscriber(void *pvParameters)
 	opts.client_id = mg_str(pcTaskGetName(NULL));	// Set Client ID
 	//opts.qos = 1;									// Set QoS to 1
 	//for Ver7.6
-	opts.will_qos = 1;									// Set QoS to 1
+	opts.will_qos = 1;								// Set QoS to 1
 	opts.will_topic = mg_str(will_topic);			// Set last will topic
 	opts.will_message = mg_str("goodbye");			// And last will message
+
+#if CONFIG_BROKER_AUTHENTICATION
+    opts.user = mg_str(CONFIG_AUTHENTICATION_USERNAME);
+    opts.pass = mg_str(CONFIG_AUTHENTICATION_PASSWORD);
+#endif
 
 	// Connect address is x.x.x.x:1883
 	// 0.0.0.0:1883 not work

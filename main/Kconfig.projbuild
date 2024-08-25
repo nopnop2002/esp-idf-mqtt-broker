@@ -88,4 +88,24 @@ menu "Application Configuration"
 		help
 			Start MQTT PUBLISHER.
 
+	config BROKER_AUTHENTICATION
+		bool "Server requests for password when connecting"
+		default false
+		help
+			Server requests for password when connecting.
+
+	config AUTHENTICATION_USERNAME
+		depends on BROKER_AUTHENTICATION
+		string "Username used for connecting to the broker"
+		default "user"
+		help
+			Username used for connecting to the broker.
+
+	config AUTHENTICATION_PASSWORD
+		depends on BROKER_AUTHENTICATION
+		string "Password used for connecting to the broker"
+		default "password"
+		help
+			Username used for connecting to the broker.
+
 endmenu

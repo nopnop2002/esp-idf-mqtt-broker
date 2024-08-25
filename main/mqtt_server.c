@@ -1,4 +1,5 @@
-/* MQTT Broker using mongoose
+/*
+	 MQTT Broker using mongoose
 
 	 This code is in the Public Domain (or CC0 licensed, at your option.)
 
@@ -29,9 +30,7 @@ struct sub *s_subs = NULL;
 struct will *s_wills = NULL;
 
 // Since version 7.8, mg_mqtt_next_sub() and mg_mqtt_next_unsub() are no longer supported.
-static size_t mg_mqtt_next_topic(struct mg_mqtt_message *msg,
-                                 struct mg_str *topic, uint8_t *qos,
-                                 size_t pos) {
+static size_t mg_mqtt_next_topic(struct mg_mqtt_message *msg, struct mg_str *topic, uint8_t *qos, size_t pos) {
   unsigned char *buf = (unsigned char *) msg->dgram.ptr + pos;
   size_t new_pos;
   if (pos >= msg->dgram.len) return 0;
@@ -44,14 +43,12 @@ static size_t mg_mqtt_next_topic(struct mg_mqtt_message *msg,
   return new_pos;
 }
 
-size_t mg_mqtt_next_sub(struct mg_mqtt_message *msg, struct mg_str *topic,
-                        uint8_t *qos, size_t pos) {
+size_t mg_mqtt_next_sub(struct mg_mqtt_message *msg, struct mg_str *topic, uint8_t *qos, size_t pos) {
   uint8_t tmp;
   return mg_mqtt_next_topic(msg, topic, qos == NULL ? &tmp : qos, pos);
 }
 
-size_t mg_mqtt_next_unsub(struct mg_mqtt_message *msg, struct mg_str *topic,
-                          size_t pos) {
+size_t mg_mqtt_next_unsub(struct mg_mqtt_message *msg, struct mg_str *topic, size_t pos) {
   return mg_mqtt_next_topic(msg, topic, NULL, pos);
 }
 
@@ -104,44 +101,75 @@ void _mg_mqtt_dump(char * tag, struct mg_mqtt_message *msg) {
 	ESP_LOG_BUFFER_HEXDUMP(tag, buf, length, ESP_LOG_INFO);
 }
 
-#define	WILL_FLAG	0x04
-#define WILL_QOS	0x18
+#define	WILL_FLAG 0x04
+#define WILL_QOS 0x18
 #define WILL_RETAIN	0x20
+#define PASSWORD_FLAG 0x40
+#define USERNAME_FLAG 0x80
 
-int _mg_mqtt_parse_header(struct mg_mqtt_message *msg, struct mg_str *client, struct mg_str *topic, 
-		struct mg_str *payload, uint8_t *qos, uint8_t *retain) {
+int _mg_mqtt_parse_header(struct mg_mqtt_message *msg, struct mg_str *client, 
+		struct mg_str *topic, struct mg_str *payload, 
+		struct mg_str *username, struct mg_str *password, uint8_t *qos, uint8_t *retain) {
 	client->len = 0;
 	topic->len = 0;
 	payload->len = 0;
+	username->len = 0;
+	password->len = 0;
 	unsigned char *buf = (unsigned char *) msg->dgram.ptr;
-	int Protocol_Name_length =	buf[2] << 8 | buf[3];
+	int Protocol_Name_length = buf[2] << 8 | buf[3];
 	int Connect_Flags_position = Protocol_Name_length + 5;
 	uint8_t Connect_Flags = buf[Connect_Flags_position];
-	ESP_LOGD("_mg_mqtt_parse_header", "Connect_Flags=%x", Connect_Flags);
-	uint8_t Will_Flag = (Connect_Flags & WILL_FLAG) >> 2;
+	ESP_LOGD("_mg_mqtt_parse_header", "Connect_Flags=0x%02x", Connect_Flags);
+	//uint8_t Will_Flag = (Connect_Flags & WILL_FLAG) >> 2;
+	int will = (Connect_Flags & WILL_FLAG) >> 2;
 	*qos = (Connect_Flags & WILL_QOS) >> 3;
 	*retain = (Connect_Flags & WILL_RETAIN) >> 5;
-	ESP_LOGD("_mg_mqtt_parse_header", "Will_Flag=%d *qos=%x *retain=%x", Will_Flag, *qos, *retain);
-	client->len = buf[Connect_Flags_position+3] << 8 | buf[Connect_Flags_position+4];
-	client->ptr = (char *)&buf[Connect_Flags_position+5];
-	ESP_LOGD("_mg_mqtt_parse_header", "client->len=%d", client->len);
-	if (Will_Flag == 0) return 0;
+	int pass = (Connect_Flags & PASSWORD_FLAG) >> 6;
+	int user = (Connect_Flags & USERNAME_FLAG) >> 7;
+	ESP_LOGD("_mg_mqtt_parse_header", "will=%d *qos=%x *retain=%x pass=%d user=%d",
+		will, *qos, *retain, pass, user);
 
-#if 0
-	int Client_Identifier_length = buf[Connect_Flags_position+3] << 8 | buf[Connect_Flags_position+4];
-	ESP_LOGD("_mg_mqtt_parse_header", "Client_Identifier_length=%d", Client_Identifier_length);
-	int Will_Topic_position = Protocol_Name_length + Client_Identifier_length + 10;
-#endif
+	int Keep_Alive_Id_position = Connect_Flags_position + 1;
+	uint16_t Keep_Alive = buf[Keep_Alive_Id_position] << 8 | buf[Keep_Alive_Id_position + 1];
+	ESP_LOGD("_mg_mqtt_parse_header", "Keep_Alive=0x%02x", Keep_Alive);
 
-	int Will_Topic_position = Protocol_Name_length + client->len + 10;
-	topic->len = buf[Will_Topic_position] << 8 | buf[Will_Topic_position+1];
-	topic->ptr = (char *)&(buf[Will_Topic_position]) + 2;
-	ESP_LOGD("_mg_mqtt_parse_header", "topic->len=%d topic->ptr=[%.*s]", topic->len, topic->len, topic->ptr);
-	int Will_Payload_position = Will_Topic_position + topic->len + 2;
-	payload->len = buf[Will_Payload_position] << 8 | buf[Will_Payload_position+1];
-	payload->ptr = (char *)&(buf[Will_Payload_position]) + 2;
-	ESP_LOGD("_mg_mqtt_parse_header", "payload->len=%d payload->ptr=[%.*s]", payload->len, payload->len, payload->ptr);
-	return 1;
+	//int Client_Id_position = Connect_Flags_position + 3;
+	int Client_Id_position = Keep_Alive_Id_position + 2;
+	//client->len = buf[Connect_Flags_position+3] << 8 | buf[Connect_Flags_position+4];
+	//client->ptr = (char *)&buf[Connect_Flags_position+5];
+	client->len = buf[Client_Id_position] << 8 | buf[Client_Id_position+1];
+	client->ptr = (char *)&buf[Client_Id_position+2];
+	ESP_LOGD("_mg_mqtt_parse_header", "client->len=%d client->ptr=[%.*s]", client->len, client->len, client->ptr);
+
+	int next_position = Client_Id_position + 2 + client->len;
+	ESP_LOGD("_mg_mqtt_parse_header", "next_position=%d", next_position);
+
+	if (will == 1) {
+		topic->len = buf[next_position] << 8 | buf[next_position+1];
+		topic->ptr = (char *)&(buf[next_position]) + 2;
+		ESP_LOGD("_mg_mqtt_parse_header", "topic->len=%d topic->ptr=[%.*s]", topic->len, topic->len, topic->ptr);
+		next_position = next_position + 2 + topic->len;
+		payload->len = buf[next_position] << 8 | buf[next_position+1];
+		payload->ptr = (char *)&(buf[next_position]) + 2;
+		ESP_LOGD("_mg_mqtt_parse_header", "payload->len=%d payload->ptr=[%.*s]", payload->len, payload->len, payload->ptr);
+		next_position = next_position + 2 + payload->len;
+	}
+
+	if (user == 1) {
+		username->len = buf[next_position] << 8 | buf[next_position+1];
+		username->ptr = (char *)&(buf[next_position]) + 2;
+		ESP_LOGD("_mg_mqtt_parse_header", "username->len=%d username->ptr=[%.*s]", username->len, username->len, username->ptr);
+		next_position = next_position + 2 + username->len;
+	}
+
+	if (pass == 1) {
+		password->len = buf[next_position] << 8 | buf[next_position+1];
+		password->ptr = (char *)&(buf[next_position]) + 2;
+		ESP_LOGD("_mg_mqtt_parse_header", "password->len=%d password->ptr=[%.*s]", password->len, password->len, password->ptr);
+		next_position = next_position + 2 + password->len;
+	}
+
+	return will;
 }
 
 int _mg_mqtt_status() {
@@ -200,10 +228,39 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 				struct mg_str cid;
 				struct mg_str topic;
 				struct mg_str payload;
+				struct mg_str username;
+				struct mg_str password;
+				int willFlag;
 				uint8_t qos;
 				uint8_t retain;
-				int willFlag = _mg_mqtt_parse_header(mm, &cid, &topic, &payload, &qos, &retain);
-				ESP_LOGI(pcTaskGetName(NULL), "cid=[%.*s] willFlag=%d", cid.len, cid.ptr, willFlag);
+				willFlag = _mg_mqtt_parse_header(mm, &cid, &topic, &payload, &username, &password, &qos, &retain);
+				ESP_LOGI(pcTaskGetName(NULL), "willFlag=%d cid.len=%d username.len=%d password.len=%d", willFlag, cid.len, username.len, password.len);
+				if (cid.len) 
+					ESP_LOGI(pcTaskGetName(NULL), "cid.len=%d cid.ptr=[%.*s]", cid.len, cid.len, cid.ptr);
+				if (username.len) 
+					ESP_LOGI(pcTaskGetName(NULL), "username.len=%d username.ptr=[%.*s]", username.len, username.len, username.ptr);
+				if (password.len) 
+					ESP_LOGI(pcTaskGetName(NULL), "password.len=%d password.ptr=[%.*s]", password.len, password.len, password.ptr);
+
+#if CONFIG_BROKER_AUTHENTICATION
+				if (username.len != strlen(CONFIG_AUTHENTICATION_USERNAME) ||
+					(strncmp(username.ptr, CONFIG_AUTHENTICATION_USERNAME, username.len) != 0) ) {
+					// Connection Refused, bad user name or password
+					uint8_t response[] = {0, 4};
+					mg_mqtt_send_header(c, MQTT_CMD_CONNACK, 0, sizeof(response));
+					mg_send(c, response, sizeof(response));
+					break;
+				}
+
+				if (password.len != strlen(CONFIG_AUTHENTICATION_PASSWORD) ||
+					(strncmp(password.ptr, CONFIG_AUTHENTICATION_PASSWORD, password.len) != 0) ) {
+					// Connection Refused, bad user name or password
+					uint8_t response[] = {0, 4};
+					mg_mqtt_send_header(c, MQTT_CMD_CONNACK, 0, sizeof(response));
+					mg_send(c, response, sizeof(response));
+					break;
+				}
+#endif
 
 				// Set tcp socket keepalive options
 				// timeout = keepidle+(keepcnt*keepintvl)
