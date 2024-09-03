@@ -52,13 +52,13 @@ idf.py flash monitor
 ![config-1](https://user-images.githubusercontent.com/6020549/110200312-a307da00-7ea0-11eb-85fa-c76f932b8023.jpg)
 
 ## Station mode with dynamic address
-![config-2](https://user-images.githubusercontent.com/6020549/110200315-a4390700-7ea0-11eb-8021-f8355818fbb2.jpg)
+![config-2](https://github.com/user-attachments/assets/27656823-913b-4d91-8582-b4d9d74e36d2)
 
 SSID:SSID of your Wifi router   
 ESP32 get IP using DHCP.    
 
 ## Station mode with static address
-![config-3](https://user-images.githubusercontent.com/6020549/110200316-a4390700-7ea0-11eb-9266-473ad7fb193e.jpg)
+![config-3](https://github.com/user-attachments/assets/7a9fef57-be24-4f40-bc20-50ab08d26dab)
 
 SSID:SSID of your Wifi router   
 ESP32 set your specific IP.   
@@ -86,10 +86,10 @@ You can connect using the mDNS hostname instead of the IP address.
 
 You can change mDNS hostname using menuconfig.   
 
-![config-5](https://user-images.githubusercontent.com/6020549/110200318-a56a3400-7ea0-11eb-8dfb-b07bbb03b0f1.jpg)
+![config-5](https://github.com/user-attachments/assets/6c7186e0-cd0a-4637-b80d-2c28e5544915)
 
 ## Access Point Mode
-![config-4](https://user-images.githubusercontent.com/6020549/110200317-a4d19d80-7ea0-11eb-84ec-21f78f97930b.jpg)
+![config-4](https://github.com/user-attachments/assets/86827b30-6de7-4ff9-b0ac-62ec1cb1b9c0)
 
 SSID:SSID of ESP32   
 ESP32 have 192.168.4.1.   
@@ -97,10 +97,10 @@ ESP32 have 192.168.4.1.
 
 
 ## Start Built-In MQTT Subscriber
-![config-6](https://user-images.githubusercontent.com/6020549/110200319-a56a3400-7ea0-11eb-9a42-1c3543c9b802.jpg)
+![config-6](https://github.com/user-attachments/assets/29422815-1711-4c6a-8731-8aee51ac854c)
 
 ## Start Built-In MQTT Publisher
-![config-7](https://user-images.githubusercontent.com/6020549/110200403-2b867a80-7ea1-11eb-9d07-80fefa3d4b34.jpg)
+![config-7](https://github.com/user-attachments/assets/ec60c145-467e-4a62-aaa4-cea89680b43c)
 
 ## Enable Authentication
 When authentication is enabled, a username and password are required to connect to the server.   
