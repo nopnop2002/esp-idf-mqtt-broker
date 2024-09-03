@@ -63,13 +63,6 @@ ESP32 get IP using DHCP.
 SSID:SSID of your Wifi router   
 ESP32 set your specific IP.   
 
-## Access Point Mode
-![config-4](https://user-images.githubusercontent.com/6020549/110200317-a4d19d80-7ea0-11eb-84ec-21f78f97930b.jpg)
-
-SSID:SSID of ESP32   
-ESP32 have 192.168.4.1.   
-
-
 ## Using mDNS hostname
 You can connect using the mDNS hostname instead of the IP address.   
 - esp-idf V4.3 or earlier   
@@ -94,6 +87,14 @@ You can connect using the mDNS hostname instead of the IP address.
 You can change mDNS hostname using menuconfig.   
 
 ![config-5](https://user-images.githubusercontent.com/6020549/110200318-a56a3400-7ea0-11eb-8dfb-b07bbb03b0f1.jpg)
+
+## Access Point Mode
+![config-4](https://user-images.githubusercontent.com/6020549/110200317-a4d19d80-7ea0-11eb-84ec-21f78f97930b.jpg)
+
+SSID:SSID of ESP32   
+ESP32 have 192.168.4.1.   
+
+
 
 ## Start Built-In MQTT Subscriber
 ![config-6](https://user-images.githubusercontent.com/6020549/110200319-a56a3400-7ea0-11eb-9a42-1c3543c9b802.jpg)
