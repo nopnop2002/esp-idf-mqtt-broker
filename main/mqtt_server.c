@@ -454,6 +454,7 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
 			ESP_LOGD(pcTaskGetName(NULL), "WILL DEL %p [%.*s] [%.*s] %d %d", 
 				c->fd, (int) will->topic.len, will->topic.ptr, (int) will->payload.len, will->payload.ptr, will->qos, will->retain);
 			free((void *)will->topic.ptr);
+			free((void *)will->payload.ptr);
 			LIST_DELETE(struct will, &s_wills, will);
 			free(will);
 		}
