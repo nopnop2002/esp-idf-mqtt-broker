@@ -26,9 +26,8 @@ idf_component_register(SRCS "mongoose.c" PRIV_REQUIRES esp_timer INCLUDE_DIRS ".
 - mongoose version 7.9.   
  The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).   
 
-- ESP-IDF V4.4/V5.x.   
- ESP-IDF V5.0 is required when using ESP32-C2.   
- ESP-IDF V5.1 is required when using ESP32-C6.   
+- ESP-IDF V5.0 or later.   
+ ESP-IDF V4.4 release branch reached EOL in July 2024.   
 
 
 # Installation
@@ -65,18 +64,6 @@ ESP32 set your specific IP.
 
 ## Using mDNS hostname
 You can connect using the mDNS hostname instead of the IP address.   
-- esp-idf V4.4  
- If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.defaults, the firmware will be built with MDNS_STRICT_MODE.   
- __If MDNS_STRICT_MODE is not set, mDNS name resolution will not be possible after long-term operation.__   
-- esp-idf V4.4.1   
- mDNS component has been updated.   
- If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.defaults, the firmware will be built with MDNS_STRICT_MODE.   
- __Even if MDNS_STRICT_MODE is set, mDNS name resolution will not be possible after long-term operation.__   
-- esp-idf V5.0 or later   
- mDNS component has been updated.   
- Long-term operation is possible without setting MDNS_STRICT_MODE.   
- The following lines in sdkconfig.defaults should be removed before menuconfig.   
- ```CONFIG_MDNS_STRICT_MODE=y```
 
 ![mdns-1](https://user-images.githubusercontent.com/6020549/93420660-60e6de00-f8ea-11ea-9783-3c295130a840.jpg)
 
