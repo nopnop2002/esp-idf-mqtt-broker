@@ -65,8 +65,6 @@ ESP32 set your specific IP.
 
 ## Using mDNS hostname
 You can connect using the mDNS hostname instead of the IP address.   
-- esp-idf V4.3 or earlier   
- You will need to manually change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
 - esp-idf V4.4  
  If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.defaults, the firmware will be built with MDNS_STRICT_MODE.   
  __If MDNS_STRICT_MODE is not set, mDNS name resolution will not be possible after long-term operation.__   
