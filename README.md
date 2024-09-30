@@ -166,6 +166,7 @@ PUBLISH->BROKER->SUBSCRIBE
 
 # mosquitto broker
 mosquitto broker is [here](https://github.com/espressif/esp-protocols/tree/master/components/mosquitto).   
+mosquitto broker supports not only WiFi but also Ethernet.   
 ```
 git clone --recursive https://github.com/espressif/esp-protocols
 cd esp-protocols/components/mosquitto/
