@@ -1,38 +1,41 @@
 #!usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# python2
-# pip install paho-mqtt
-#
-# python3
-# pip3 install paho-mqtt
+# python3 -m pip install -U paho-mqtt
 
-import paho.mqtt.client as mqtt     # MQTTのライブラリをインポート
+import argparse
+import paho.mqtt
+import paho.mqtt.client as mqtt
 
-# ブローカーに接続できたときの処理
+# Handler when connecting to broker
 def on_connect(client, userdata, flag, rc):
-  print("Connected with result code " + str(rc))  # 接続できた旨表示
-  client.subscribe("drone/#")  # subするトピックを設定
-  client.subscribe("system/#")  # subするトピックを設定
+	print("Connected with result code " + str(rc))
+	client.subscribe("/system/#")
 
-# ブローカーが切断したときの処理
-#def on_disconnect(client, userdata, flag, rc):
+# Handler when broker disconnects
 def on_disconnect(client, userdata, flag):
-  print("disconnection.")
+	print("disconnection.")
 
-# メッセージが届いたときの処理
+# # Handler when message arrives
 def on_message(client, userdata, msg):
-  # msg.topicにトピック名が，msg.payloadに届いたデータ本体が入っている
-  print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
+	# msg.topic contains the topic name and msg.payload contains the received data
+	print("Received message '" + str(msg.payload) + "' on topic '" + msg.topic + "' with QoS " + str(msg.qos))
 
-# MQTTの接続設定
-client = mqtt.Client()                 # クラスのインスタンス(実体)の作成
-client.on_connect = on_connect         # 接続時のコールバック関数を登録
-client.on_disconnect = on_disconnect   # 切断時のコールバックを登録
-client.on_message = on_message         # メッセージ到着時のコールバック
+if __name__=='__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--host', help='mqtt host', default="esp32-broker.local")
+	parser.add_argument('--port', type=int, help='mqtt port', default=1883)
+	args = parser.parse_args()
+	print("args.host={}".format(args.host))
+	print("args.port={}".format(args.port))
 
-client.will_set('system/message', 'Subscriber Down')
-#client.connect("192.168.10.141", 1883, 60)  # 接続先は自分自身
-client.connect("esp32-broker.local", 1883, 60)  # 接続先は自分自身
+	client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
+	client.on_connect = on_connect
+	client.on_disconnect = on_disconnect
+	client.on_message = on_message
 
-client.loop_forever()                  # 永久ループして待ち続ける
+	client.will_set('/system/message', 'Subscriber Down')
+	client.connect(args.host, args.port, 60)
+
+	# keep waiting in an endless loop
+	client.loop_forever()
