@@ -139,7 +139,8 @@ $ mosquitto_sub -v -h esp32-broker.local -p 1883  -t "topic/#"
 topic/will GOODBYE
 ```
 
-# Unsubscribe using python and paho
+# Unsubscribe using python and paho   
+V2 of the Paho library was released in February 2024.   
 ```
 $ python3 -m pip install -U paho-mqtt
 $ python3 unsub_example.py
