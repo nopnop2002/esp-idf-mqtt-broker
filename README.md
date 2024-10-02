@@ -141,8 +141,8 @@ topic/will GOODBYE
 
 # Unsubscribe using python and paho
 ```
-$ pip install paho
-$ python unsub_example.py
+$ python3 -m pip install -U paho-mqtt
+$ python3 unsub_example.py
 
 Connected with result code 0
 subscribe hoge
