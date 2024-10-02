@@ -170,7 +170,7 @@ mosquitto broker supports not only WiFi but also Ethernet.
 ```
 git clone --recursive https://github.com/espressif/esp-protocols
 cd esp-protocols/components/mosquitto/
-cd examples/
+cd examples/broker/
 idf.py menuconfig
 idf.py build
 ```
