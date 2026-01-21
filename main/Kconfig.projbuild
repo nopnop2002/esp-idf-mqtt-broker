@@ -15,17 +15,33 @@ menu "Application Configuration"
 				Wi-Fi is Access Point Mode.
 	endchoice
 
-	config ESP_WIFI_SSID
+	config ESP_WIFI_ST_SSID
+		depends on ST_MODE
 		string "WiFi SSID"
 		default "myssid"
 		help
-			SSID (network name) for the example to connect to.
+			SSID (network name) to connect to.
 
-	config ESP_WIFI_PASSWORD
+	config ESP_WIFI_ST_PASSWORD
+		depends on ST_MODE
 		string "WiFi Password"
 		default "mypassword"
 		help
-			WiFi password (WPA or WPA2) for the example to use.
+			WiFi password (WPA or WPA2) to connect to.
+
+	config ESP_WIFI_AP_SSID
+		depends on AP_MODE
+		string "WiFi SSID"
+		default "esp32"
+		help
+			SSID (network name) to connect to.
+
+	config ESP_WIFI_AP_PASSWORD
+		depends on AP_MODE
+		string "WiFi Password"
+		default "password"
+		help
+			WiFi password (WPA or WPA2) to connect to.
 
 	config ESP_MAX_STA_CONN
 		depends on AP_MODE
