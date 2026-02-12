@@ -22,7 +22,7 @@ idf_component_register(SRCS "mongoose.c" PRIV_REQUIRES esp_timer INCLUDE_DIRS ".
 
 4. Compile this project.
 
-# Software requiment
+# Software requirements
 - mongoose version 7.9.   
  The version of mongoose is written [here](https://github.com/cesanta/mongoose/blob/master/mongoose.h#L23).   
 
