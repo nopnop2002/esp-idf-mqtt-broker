@@ -67,7 +67,7 @@ menu "Application Configuration"
 	config STATIC_IP
 		depends on ST_MODE
 		bool "Enable Static IP Address"
-		default false
+		default n
 		help
 			Enable Static IP Address.
 
@@ -94,19 +94,19 @@ menu "Application Configuration"
 
 	config SUBSCRIBE
 		bool "Start MQTT SUBSCRIBER"
-		default false
+		default n
 		help
 			Start MQTT SUBSCRIBER.
 
 	config PUBLISH
 		bool "Start MQTT PUBLISHER"
-		default false
+		default n
 		help
 			Start MQTT PUBLISHER.
 
 	config BROKER_AUTHENTICATION
 		bool "Server requests for password when connecting"
-		default false
+		default n
 		help
 			Server requests for password when connecting.
 
